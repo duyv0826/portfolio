@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>洪兄 · 互动媒体艺术 / 游戏设计作品集</title>
+<style>
+  :root{
+    --bg:#0e0f13; --bg2:#16181f; --fg:#e8eaf0; --muted:#9aa0ad;
+    --accent:#6c8cff; --accent2:#36d6c3; --line:#262a36; --card:#1a1d26;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--fg);line-height:1.7}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);
+    background:rgba(14,15,19,.7);border-bottom:1px solid var(--line)}
+  nav{display:flex;justify-content:space-between;align-items:center;height:60px}
+  nav .logo{font-weight:700;letter-spacing:.5px}
+  nav ul{display:flex;gap:24px;list-style:none;font-size:14px;color:var(--muted)}
+  nav ul a:hover{color:var(--fg)}
+  .hero{padding:120px 0 90px;text-align:center;
+    background:radial-gradient(900px 400px at 50% -10%,rgba(108,140,255,.18),transparent)}
+  .hero h1{font-size:46px;line-height:1.2;margin-bottom:16px}
+  .hero .tag{color:var(--accent2);font-weight:600;letter-spacing:2px}
+  .hero p{color:var(--muted);max-width:620px;margin:18px auto 0}
+  .btn{display:inline-block;margin-top:30px;padding:12px 28px;border-radius:999px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0e0f13;font-weight:700}
+  section{padding:80px 0}
+  h2{font-size:30px;margin-bottom:8px}
+  .sub{color:var(--muted);margin-bottom:40px}
+  .about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  .about p{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;transition:.25s;cursor:pointer;display:block}
+  .card:hover{transform:translateY(-6px);border-color:var(--accent)}
+  .thumb{height:170px;background:linear-gradient(135deg,#222638,#2c3350)}
+  .card .body{padding:16px 18px}
+  .card h3{font-size:17px;margin-bottom:6px}
+  .card span{font-size:13px;color:var(--muted)}
+  .card p.desc{font-size:13px;color:var(--muted);margin-top:8px}
+  .contact{text-align:center}
+  .contact a{color:var(--accent);font-weight:600}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);
+    font-size:13px;text-align:center}
+  .hint{color:var(--muted);font-size:14px}
+  @media(max-width:760px){.about,.grid{grid-template-columns:1fr}.hero h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header>
+  <nav class="wrap">
+    <div class="logo">洪兄 / HONG</div>
+    <ul>
+      <li><a href="#about">关于</a></li>
+      <li><a href="#works">作品</a></li>
+      <li><a href="#gallery">图库</a></li>
+      <li><a href="#contact">联系</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero wrap">
+  <div class="tag">INTERACTIVE MEDIA · GAME DESIGN</div>
+  <h1>用交互与游戏<br/>讲述可以被玩的故事</h1>
+  <p>澳门科技大学 互动媒体艺术 · 游戏设计方向研究生。专注玩法原型、叙事交互与媒体艺术装置的创作与实现。</p>
+  <a class="btn" href="#works">查看作品</a>
+</section>
+
+<section id="about" class="wrap">
+  <h2>关于我</h2>
+  <div class="sub">ABOUT</div>
+  <div class="about">
+    <p>我关注“人如何与数字系统互动”——从独立游戏的原型设计，到结合传感器与投影的互动装置。本科与研究生阶段积累了 Unity / 原型开发 / 用户测试的经验，毕业作品将围绕 <strong>可玩叙事</strong> 展开。</p>
+    <p>技能：Unity · C# · 原型设计 · 交互叙事 · 基础 3D /  shader · 用户研究与可用性测试。持续在小黑盒与知乎输出游戏设计相关内容。</p>
+  </div>
+</section>
+
+<section id="works" class="wrap">
+  <h2>精选作品</h2>
+  <div class="sub">SELECTED WORKS — 在 <code>projects.json</code> 中增删条目即可，无需改动本文件</div>
+  <div class="grid" id="works-grid">
+    <p class="hint">作品加载中…</p>
+  </div>
+</section>
+
+<section id="gallery" class="wrap">
+  <h2>作品图库</h2>
+  <div class="sub">GALLERY — 由图床桶自动生成（gallery.json）</div>
+  <div class="grid" id="gallery-grid">
+    <p class="hint">图库加载中…</p>
+  </div>
+</section>
+
+<section id="contact" class="wrap contact">
+  <h2>联系我</h2>
+  <div class="sub">CONTACT</div>
+  <p>合作 / 交流欢迎来信：<a href="mailto:you@example.com">you@example.com</a></p>
+  <p style="color:var(--muted);margin-top:10px">小黑盒 / 知乎：@洪兄（替换为你的主页）</p>
+</section>
+
+<footer>© 2026 洪兄 · 本页为 COS 静态站脚手架（数据驱动版），内容请替换为真实作品。</footer>
+
+<script>
+fetch('projects.json')
+  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(list => {
+    const grid = document.getElementById('works-grid');
+    if (!Array.isArray(list) || list.length === 0) {
+      grid.innerHTML = '<p class="hint">暂无作品，去 projects.json 添加吧。</p>';
+      return;
+    }
+    grid.innerHTML = list.map(p => {
+      const bg = p.img
+        ? `style="background-image:url('${p.img}');background-size:cover;background-position:center"`
+        : '';
+      const inner = `
+        <div class="thumb" ${bg}></div>
+        <div class="body">
+          <h3>${p.title || '未命名作品'}</h3>
+          <span>${p.tag || ''}</span>
+          ${p.desc ? `<p class="desc">${p.desc}</p>` : ''}
+        </div>`;
+      return p.link
+        ? `<a class="card" href="${p.link}" target="_blank" rel="noopener">${inner}</a>`
+        : `<div class="card">${inner}</div>`;
+    }).join('');
+  })
+  .catch(err => {
+    document.getElementById('works-grid').innerHTML =
+      '<p class="hint">作品列表加载失败：' + err.message +
+      '。请确认 projects.json 已与 index.html 一同上传到桶根目录；本地直接双击打开（file://）会因浏览器安全策略无法读取 JSON，需用本地服务器预览。</p>';
+  });
+
+// 图库：拉取图床桶生成的 gallery.json（构建期由脚本生成，运行时静态消费，无需密钥）
+fetch('gallery.json')
+  .then(r => r.ok ? r.json() : [])
+  .then(list => {
+    const grid = document.getElementById('gallery-grid');
+    if (!Array.isArray(list) || list.length === 0) {
+      grid.innerHTML = '<p class="hint">暂无图库。填好密钥后运行 `python create_cos_buckets.py --gallery` 生成 gallery.json，连同站点一起上传即可。</p>';
+      return;
+    }
+    grid.innerHTML = list.map(p => `
+      <a class="card" href="${p.url}" target="_blank" rel="noopener">
+        <div class="thumb" style="background-image:url('${p.url}');background-size:cover;background-position:center"></div>
+        <div class="body"><h3>${p.name || '图片'}</h3></div>
+      </a>`).join('');
+  })
+  .catch(() => {
+    document.getElementById('gallery-grid').innerHTML =
+      '<p class="hint">图库加载失败：请确认 gallery.json 已上传到桶根目录。</p>';
+  });
+</script>
+</body>
+</html>
