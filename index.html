@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>洪昺森 · 技术策划方向作品集</title>
+<meta name="description" content="洪昺森的游戏设计与开发作品集：配置驱动叙事引擎、Unity 谜题管线、Godot 休闲游戏。目标岗位：技术策划 / 游戏系统策划。">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="index.html">
+      <span>洪昺森</span>
+      <span class="brand__role">技术策划 / 游戏系统设计</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a class="nav__link" href="#projects">项目</a>
+      <a class="nav__link" href="#capability">工程能力</a>
+      <a class="nav__link" href="#content">行业观察</a>
+      <a class="nav__link" href="#contact">联系</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" id="top">
+    <div class="container">
+      <p class="hero__eyebrow">澳门科技大学 · 互动媒体艺术硕士（游戏设计）</p>
+      <h1 class="hero__title">我做的是「让内容可扩展、<br>让改动可验证」这件事</h1>
+      <p class="hero__lead">
+        三个项目看起来题材完全不同——叙事、解谜、休闲——但它们在解决同一个工程问题：
+        <strong>内容不断增长时，如何让引擎保持稳定</strong>。
+        把设计与配置从代码里剥离出去，再用自动化断言保证每一次扩展都不破坏既有流程。
+      </p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="#projects">查看三个项目</a>
+        <a class="button" href="https://github.com/duyv0826" data-track="outbound_click" data-track-target="github" rel="noopener">GitHub</a>
+      </div>
+
+      <ul class="stats">
+        <li class="stats__item">
+          <div class="stats__value">20,484</div>
+          <div class="stats__label">三项目代码总行数（实测）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">330</div>
+          <div class="stats__label">自动化断言（126 条已实跑全绿）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">3</div>
+          <div class="stats__label">引擎与语言栈：Unity / Godot / JavaScript</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">28+</div>
+          <div class="stats__label">小黑盒原创内容（六周内）</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="container">
+      <h2 class="section__title">项目</h2>
+      <p class="section__desc">
+        按技术策划岗位的相关度排序。每个项目都写了「技术决策」而不只是「做了什么」——
+        因为同一个功能，怎么做比做了什么更能说明问题。
+      </p>
+
+      <div class="projects">
+
+        <article class="project-card">
+          <div>
+            <div class="project-card__head">
+              <span class="project-card__index">01</span>
+              <h3 class="project-card__title"><a href="projects/aoli-guangjing.html">澳里·光景</a></h3>
+            </div>
+            <p class="project-card__role">Unity 6 · 系统设计与谜题管线 · 独立开发</p>
+            <ul class="project-card__points">
+              <li>把设计侧的 <strong>8 个谜题收敛为三原语统一模型</strong>（Light / Sort / Drag），新增谜题变成配置工作而非编码工作</li>
+              <li>定义 <strong>PuzzleConfig Schema</strong>，ScriptableObject 与 JSON 双通道，设计侧可独立调整结构与数值</li>
+              <li>用 <strong>4 个 asmdef 强制分层依赖</strong>，Core 与 Game 解耦；引入确定性模拟保证同输入可复现</li>
+              <li>编写 <strong>204 个测试用例</strong>（EditMode + PlayMode + 确定性），覆盖状态机、经济、存档、可达性、配置完整性</li>
+            </ul>
+            <div class="metrics">
+              <span class="metric">Unity <b>6000.0.23f1</b></span>
+              <span class="metric"><b>83</b> 个 C#</span>
+              <span class="metric"><b>15,558</b> 行</span>
+              <span class="metric">测试 <b>204</b></span>
+              <span class="metric">可玩场景 <b>9</b></span>
+            </div>
+          </div>
+          <a class="project-card__media" href="projects/aoli-guangjing.html">
+            <img src="assets/img/aoli-title.jpg" alt="《澳里·光景》标题界面设计稿" loading="lazy">
+          </a>
+        </article>
+
+        <article class="project-card">
+          <div>
+            <div class="project-card__head">
+              <span class="project-card__index">02</span>
+              <h3 class="project-card__title"><a href="projects/room-of-choice.html">抉择的房间</a></h3>
+            </div>
+            <p class="project-card__role">JavaScript · 配置驱动叙事引擎 · 独立开发 · v1.6.4</p>
+            <ul class="project-card__points">
+              <li><strong>内容与引擎完全解耦</strong>：剧情节点、线索、结局全部外置为配置，引擎层不引用任何具体节点 ID</li>
+              <li>v1.6.4 新增分歧与陷阱收敛玩法，<strong>引擎层字节级零改动</strong>（可由 git 复核）</li>
+              <li>设计<strong>线索门控机制</strong>：未掌握线索时选项渲染为「未解锁」，把线索从信息回现升级为路径解锁</li>
+              <li>三层自动化验证：<strong>126 条断言全绿</strong>，每次配置变更逐节点校验后才推进</li>
+            </ul>
+            <div class="metrics">
+              <span class="metric">章节 <b>4</b></span>
+              <span class="metric">节点 <b>30</b></span>
+              <span class="metric">结局 <b>18</b></span>
+              <span class="metric">线索 <b>18</b></span>
+              <span class="metric">断言 <b>126</b> 全绿</span>
+            </div>
+          </div>
+          <a class="project-card__media" href="projects/room-of-choice.html">
+            <img src="assets/img/aoli-memorywall.jpg" alt="《澳里·光景》记忆墙界面设计稿" loading="lazy">
+          </a>
+        </article>
+
+        <article class="project-card">
+          <div>
+            <div class="project-card__head">
+              <span class="project-card__index">03</span>
+              <h3 class="project-card__title"><a href="projects/star-scavenger.html">星际拾荒者</a></h3>
+            </div>
+            <p class="project-card__role">Godot 4.3 · 接物类休闲游戏 · 独立开发</p>
+            <ul class="project-card__points">
+              <li>EventBus 事件总线 + 组件化结构，3 个场景、4 个 GDScript，完成 <strong>Web 平台导出</strong></li>
+              <li>建立<strong>素材溯源与许可证管理流程</strong>：7 张 AI 占位贴图替换为 Kenney CC0 真实画师素材，保留备份并输出替换规格</li>
+              <li>实践路径：先用占位资源验证玩法，再投入美术成本——避免玩法未验证前的资源浪费</li>
+            </ul>
+            <div class="metrics">
+              <span class="metric">Godot <b>4.3</b></span>
+              <span class="metric"><b>816</b> 行 GDScript</span>
+              <span class="metric">场景 <b>3</b></span>
+              <span class="metric">素材 <b>CC0</b></span>
+            </div>
+          </div>
+          <a class="project-card__media" href="projects/star-scavenger.html">
+            <img src="assets/img/scavenger-bg.png" alt="《星际拾荒者》背景素材，Kenney CC0" loading="lazy">
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="capability">
+    <div class="container">
+      <h2 class="section__title">工程能力</h2>
+      <p class="section__desc">
+        不是技能清单，是三个项目里反复出现、且能被代码证明的做法。
+      </p>
+
+      <div class="capability-grid">
+        <div class="capability">
+          <h3 class="capability__title">架构</h3>
+          <ul class="capability__list">
+            <li>配置驱动：内容与逻辑分离，扩展走数据不走代码</li>
+            <li>分层与依赖约束：asmdef 强制边界，Core 不反向依赖 Game</li>
+            <li>事件总线：模块间通信解耦</li>
+            <li>状态机：谜题与流程统一为可测状态模型</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">质量</h3>
+          <ul class="capability__list">
+            <li>确定性模拟：同一输入序列可复现，结果可被自动验证</li>
+            <li>回归断言：126 条已实跑全绿，204 条待 Unity 环境验证</li>
+            <li>可达性校验：确保新增内容不会让玩家卡死</li>
+            <li>配置完整性检查：数据错误在测试阶段暴露，不在运行时</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">工程习惯</h3>
+          <ul class="capability__list">
+            <li>语法校验前置，逐节点校验后才推进下一步</li>
+            <li>以断言锁定「扩展不破坏既有流程」</li>
+            <li>素材溯源与许可证归档，AI 占位与成品分层管理</li>
+            <li>git 提交信息记录决策而非结果</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">工具与运维</h3>
+          <ul class="capability__list">
+            <li>Unity 6 / Godot 4.3 / JavaScript（UMD 双端）</li>
+            <li>Unity Test Framework（NUnit）、Godot 导出管线</li>
+            <li>腾讯云 Lighthouse 自部署：new-api 中转、自建图床 imgbed</li>
+            <li>GitHub + SSH deploy key</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="content">
+    <div class="container">
+      <h2 class="section__title">行业观察与内容</h2>
+      <p class="section__desc">
+        我在持续跟踪两件事：行业怎么选人，玩家怎么反应。
+        下面三篇是我自己写的小黑盒内容，和我要投的岗位是同一件事。
+      </p>
+
+      <ul class="post-list">
+        <li class="post-list__item">《雷火米哈游笔试开考 AI 编程，刷题还有用吗》</li>
+        <li class="post-list__item">《游戏公司现在只招"U盘式人才"：都在摘熟果子，没人种树？》</li>
+        <li class="post-list__item">《为什么骂策划骂得最凶的玩家，往往是最舍不得卸载的那个？》</li>
+      </ul>
+
+      <p class="section__desc" style="margin-top: var(--space-6);">
+        另一批内容是 AI 工具的能力与成本分析（DeepSeek / Gemini / Codex 定价、缓存命中、token 消耗）。
+        这两类内容合起来是一件事：<strong>我在摸 AI 工具的能力边界，也在看行业怎么挑人</strong>。
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container container--narrow">
+      <h2 class="section__title">联系</h2>
+      <p class="section__desc">
+        正在寻找技术策划 / 游戏系统策划方向的实习机会，2027 年暑期可全职实习。
+      </p>
+      <div class="tag-row">
+        <span class="tag">邮箱 2260030089@student.must.edu.mo</span>
+        <span class="tag">所在地 广东珠海</span>
+        <span class="tag">户籍 安徽合肥</span>
+      </div>
+      <div class="hero__actions" style="margin-top: var(--space-6);">
+        <a class="button button--primary" href="https://github.com/duyv0826" data-track="outbound_click" data-track-target="github" rel="noopener">GitHub</a>
+        <a class="button" href="https://xiaoheihe.cn/app/user/profile/81382527" data-track="outbound_click" data-track-target="xhh" rel="noopener">小黑盒</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>数据实测于 2026-09-17，来源为本机代码仓库与运行环境，可复现。</p>
+    <p>页面图片均为真实来源：《澳里·光景》为本人设计交付稿；《星际拾荒者》素材来自 Kenney（CC0 公共领域）。本站点不使用 AI 生成图片。</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

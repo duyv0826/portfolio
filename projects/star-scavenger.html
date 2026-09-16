@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星际拾荒者 · 洪昺森作品集</title>
+<meta name="description" content="《星际拾荒者》Godot 4.3 接物类休闲游戏：EventBus 架构、Web 导出、Kenney CC0 素材合规与替换流程。">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="../index.html">
+      <span>洪昺森</span>
+      <span class="brand__role">技术策划 / 游戏系统设计</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a class="nav__link" href="../index.html#projects">项目</a>
+      <a class="nav__link" href="../index.html#capability">工程能力</a>
+      <a class="nav__link" href="../index.html#content">行业观察</a>
+      <a class="nav__link" href="../index.html#contact">联系</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="面包屑">
+      <a href="../index.html">作品集</a> / 星际拾荒者
+    </nav>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <p class="hero__eyebrow">项目 03 · 第二个引擎栈 · 素材合规实践</p>
+      <h1 class="hero__title">星际拾荒者</h1>
+      <p class="hero__lead">
+        一个 Godot 4.3 的接物类休闲小游戏。规模不大，但它证明两件事：
+        <strong>我能用第二套引擎把东西做完并导出到 Web</strong>，
+        以及<strong>我在乎素材从哪来</strong>——后者在游戏公司里是真实痛点。
+      </p>
+      <ul class="stats">
+        <li class="stats__item">
+          <div class="stats__value">816</div>
+          <div class="stats__label">GDScript 行数（4 个脚本）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">3</div>
+          <div class="stats__label">场景（Main / Player / FallingItem）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">7</div>
+          <div class="stats__label">已完成替换的真实画师素材</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">CC0</div>
+          <div class="stats__label">素材许可证（Kenney）</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">工程结构</h2>
+      <div class="prose">
+        <p>
+          虽然是小型项目，但结构不含糊：<strong>EventBus 事件总线</strong>负责模块间通信，
+          Player 与 FallingItem 各自组件化，Main 负责流程编排。
+          这样加一个新的掉落物类型，只需要加一个组件和一份配置。
+        </p>
+        <p>
+          已完成 <strong>Web 平台导出</strong>，产出可直接在浏览器运行的构建包
+          — 这也是为什么它能被任何人点开就玩，不需要安装。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">这件事值得单独讲：素材溯源</h2>
+      <div class="prose">
+        <p>
+          项目初期用 AI 生成图做占位，玩法验证完成后，我把
+          <strong>7 张贴图全部替换为 Kenney 的 CC0 真实画师素材</strong>，
+          并输出了一份《贴图替换规格》，包含：
+        </p>
+        <ul>
+          <li>槽位映射表：文件名 / 在游戏中扮演的角色 / 对应来源素材</li>
+          <li>输出尺寸与引擎缩放参数（避免替换后比例崩掉）</li>
+          <li>来源包与许可证说明（CC0，可商用，无需署名）</li>
+          <li>AI 占位原图备份在独立目录，可随时回滚</li>
+        </ul>
+        <p>
+          为什么要做这些？因为<strong>素材版权出问题的项目，比技术出问题的多</strong>。
+          一个能说清每张图从哪来、什么授权、怎么替换的流程，
+          在需要接外部美术的项目里是刚需。
+        </p>
+        <p>
+          同时这也是一条成本纪律：<strong>先用占位资源验证玩法，再投入美术成本</strong>。
+          玩法没验证就做精品美术，是最常见的浪费。
+        </p>
+      </div>
+
+      <div class="gallery">
+        <figure>
+          <img src="../assets/img/scavenger-bg.png" alt="背景素材，Kenney CC0" loading="lazy">
+          <figcaption>背景 · Kenney Simple Space · CC0</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/scavenger-ship.png" alt="收集舱飞船素材，Kenney CC0" loading="lazy">
+          <figcaption>收集舱飞船 · Kenney Space Shooter Redux · CC0</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/scavenger-star.png" alt="星体素材，Kenney CC0" loading="lazy">
+          <figcaption>普通星与黄金星 · Kenney Simple Space · CC0</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <h2 class="section__title">面试时会怎么讲这个项目</h2>
+      <div class="prose">
+        <p>
+          <strong>问：为什么美术先用 AI 占位再换掉？</strong><br>
+          因为玩法没验证之前投入美术成本是浪费。占位 → 验证 → 替换，
+          这条路径让美术成本花在已经确认好玩的东西上。
+        </p>
+        <p>
+          <strong>问：换成 CC0 素材有什么讲究？</strong><br>
+          不是"能跑就行"。要记录来源包、作者、许可证、尺寸映射，
+          并保留原图备份可回滚。素材合规是可交付流程，不是一次性动作。
+        </p>
+      </div>
+
+      <div class="tag-row">
+        <span class="tag">Godot 4.3</span>
+        <span class="tag">GDScript</span>
+        <span class="tag">Web 导出</span>
+        <span class="tag">CC0 素材合规</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>数据实测于 2026-09-17，来源为本机 Godot 工程，可复现。</p>
+    <p>素材来源：Kenney（CC0 公共领域），已在项目内《贴图替换规格》中完整标注。</p>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

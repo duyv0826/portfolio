@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>抉择的房间 · 洪昺森作品集</title>
+<meta name="description" content="《抉择的房间》v1.6.4：配置驱动叙事引擎，内容与引擎完全解耦，126 条自动化断言全绿，引擎层字节级零改动。">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="../index.html">
+      <span>洪昺森</span>
+      <span class="brand__role">技术策划 / 游戏系统设计</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a class="nav__link" href="../index.html#projects">项目</a>
+      <a class="nav__link" href="../index.html#capability">工程能力</a>
+      <a class="nav__link" href="../index.html#content">行业观察</a>
+      <a class="nav__link" href="../index.html#contact">联系</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="面包屑">
+      <a href="../index.html">作品集</a> / 抉择的房间
+    </nav>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <p class="hero__eyebrow">项目 02 · 唯一完整可玩 · 解耦可被 git 复核</p>
+      <h1 class="hero__title">抉择的房间</h1>
+      <p class="hero__lead">
+        一个循环叙事游戏：你在一间房里醒来，每个选择都在重塑这个房间，
+        走到结局不算失败——每个结局都是一块拼图。
+        技术上它是一套<strong>配置驱动的叙事引擎</strong>：
+        剧情、线索、结局全部外置，引擎层不认识任何具体节点。
+      </p>
+      <ul class="stats">
+        <li class="stats__item">
+          <div class="stats__value">18</div>
+          <div class="stats__label">结局（互不重复）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">30</div>
+          <div class="stats__label">剧情节点 / 4 章</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">126</div>
+          <div class="stats__label">自动化断言（已实跑全绿）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">v1.6.4</div>
+          <div class="stats__label">10 天 6 个版本</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">核心决策：把变动源隔离出去</h2>
+      <div class="prose">
+        <p>
+          剧情是这类游戏里变动最频繁的资产。如果剧情和结构写在同一个文件里，
+          每加一个结局都要动引擎，回归风险随内容量线性上升。
+        </p>
+        <p>
+          我的做法是把<strong>全部剧情节点、线索、结局外置为配置层</strong>，
+          引擎只认通用 schema，不引用任何具体节点 ID。
+          新增章节与结局只改配置，引擎零改动。
+        </p>
+        <p>
+          这不是自述——它可被验证。git 记录里 v1.6.4 的提交信息是：
+        </p>
+        <p style="font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--color-accent); border-left: 2px solid var(--color-accent-border); padding-left: var(--space-4);">
+          v1.6.4: divergence x trap convergence (view-layer only, engine byte-identical)
+        </p>
+        <p>
+          新增了分歧与陷阱收敛的玩法，<strong>引擎层字节级零改动</strong>。
+          这句话能被 <code style="font-family: var(--font-mono);">git diff</code> 复核。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">两个设计机制</h2>
+
+      <div class="capability-grid">
+        <div class="capability">
+          <h3 class="capability__title">线索门控</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin-top: 0;">
+            8 个选项带 <code style="font-family: var(--font-mono);">requiresClue</code> 条件。
+            玩家未掌握对应线索时，选项渲染为「未解锁」的幽灵按钮，并给出不剧透的暗示。
+          </p>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin-bottom: 0;">
+            作用：把线索从「信息回现」升级为「路径解锁」，
+            让循环母题从一个设定变成<strong>能被玩到的机制</strong>。
+          </p>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">跨轮记忆</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin-top: 0;">
+            结局揭示的线索持久化保存，重玩时在早期节点触发记忆回现文本。
+          </p>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin-bottom: 0;">
+            作用：让玩家每一轮都比上一轮多知道一点，
+            把「重复」从惩罚变成<strong>进度</strong>——这是循环叙事能否成立的关键。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">质量保障：126 条断言</h2>
+      <p class="section__desc">
+        以下结果均在本机实跑验证，可复现。
+      </p>
+
+      <div class="capability-grid">
+        <div class="capability">
+          <h3 class="capability__title">回归测试 93 / 93</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">
+            覆盖节点寻址、线索门控、陷阱识别、结局归因等。
+          </p>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">校验脚本 33 / 33</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">
+            覆盖配置完整性、可达性、数据一致性。
+          </p>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">语法校验 5 / 5</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">
+            每次内联脚本改动后必跑，不依赖回归测试兜底。
+          </p>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">冒烟流程通过</h3>
+          <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0;">
+            全流程渲染无异常，含门控分支。
+          </p>
+        </div>
+      </div>
+
+      <div class="notice">
+        <span>待办</span>
+        <span>
+          <strong>这个项目目前没有"有人玩过"的数据。</strong>
+          部署与埋点方案见作品集目录下的《P0-数据破零执行清单》。
+          真实的首周 60 次游玩，比一万个解释不清的 PV 更有说服力。
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <h2 class="section__title">面试时会怎么讲这个项目</h2>
+      <div class="prose">
+        <p>
+          <strong>问：为什么要做内容与引擎解耦？</strong><br>
+          因为剧情是最高频变动的资产。把变动源隔离出去，扩展才不会引入回归。
+          证据是 v1.6.4 引擎字节级零改动——不是我说解耦了，是 git 说的。
+        </p>
+        <p>
+          <strong>问：18 个结局，怎么保证不重复、都可达？</strong><br>
+          靠测试。可达性校验会断言每个结局都有路径能到达，
+          配置完整性检查会在测试阶段暴露错误，而不是等玩家卡死。
+        </p>
+      </div>
+
+      <div class="tag-row">
+        <span class="tag">JavaScript（UMD 双端）</span>
+        <span class="tag">localStorage 持久化</span>
+        <span class="tag">Node 断言测试</span>
+        <span class="tag">4,110 行</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>数据实测于 2026-09-17：Node 解析配置 + 实跑测试套件 + git 历史统计，可复现。</p>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

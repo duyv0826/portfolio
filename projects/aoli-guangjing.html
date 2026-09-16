@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>澳里·光景 · 洪昺森作品集</title>
+<meta name="description" content="《澳里·光景》Unity 6 工程：8 个谜题收敛为三原语统一模型，PuzzleConfig Schema，204 个测试用例，9 个可玩场景。">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="../index.html">
+      <span>洪昺森</span>
+      <span class="brand__role">技术策划 / 游戏系统设计</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a class="nav__link" href="../index.html#projects">项目</a>
+      <a class="nav__link" href="../index.html#capability">工程能力</a>
+      <a class="nav__link" href="../index.html#content">行业观察</a>
+      <a class="nav__link" href="../index.html#contact">联系</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="面包屑">
+      <a href="../index.html">作品集</a> / 澳里·光景
+    </nav>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <p class="hero__eyebrow">项目 01 · 规模最大 · 最贴近技术策划日常</p>
+      <h1 class="hero__title">澳里·光景</h1>
+      <p class="hero__lead">
+        一个以「时间叠层」为核心差异化的解谜叙事游戏。这个项目真正的难点不在玩法，
+        而在于<strong>把设计侧想要的 8 个谜题，翻译成程序能按统一接口实现的配置结构</strong>——
+        这正是技术策划每天做的事。
+      </p>
+      <ul class="stats">
+        <li class="stats__item">
+          <div class="stats__value">15,558</div>
+          <div class="stats__label">C# 总行数（83 个文件）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">204</div>
+          <div class="stats__label">测试用例（23 个测试文件）</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">9</div>
+          <div class="stats__label">可玩场景</div>
+        </li>
+        <li class="stats__item">
+          <div class="stats__value">Unity 6</div>
+          <div class="stats__label">6000.0.23f1</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">四个关键决策</h2>
+
+      <div class="prose">
+        <h3>把 8 个谜题收敛成 3 个原语</h3>
+        <p>
+          设计侧最初提的是 8 个各不相同的谜题。如果各自实现，就是 8 套判定逻辑、8 份接入代码、
+          8 倍回归成本。我把它们抽象为三个原语——<strong>Light（点亮）、Sort（排序）、Drag（拖拽归位）</strong>，
+          每个谜题变成一份配置加一个状态机实例。
+        </p>
+        <p>
+          收益不是"少写代码"，而是<strong>新增谜题从编码工作变成了数据工作</strong>，
+          设计侧可以自己加内容而不需要程序介入。
+        </p>
+
+        <h3>PuzzleConfig Schema：ScriptableObject 与 JSON 双通道</h3>
+        <p>
+          同一份结构定义，既能在 Unity 编辑器里以 ScriptableObject 形式可视化编辑，
+          也能以 JSON 形式被外部工具读写和版本管理。设计侧调数值不碰代码，
+          程序侧接数据不依赖编辑器操作。
+        </p>
+
+        <h3>用 asmdef 强制分层，而不是靠自觉</h3>
+        <p>
+          Core（Economy / Events / Input / Simulation / Subsystems / Time）与
+          Game（Audio / Config / Flow / Persistence / Presentation / Runtime）之间，
+          用 4 个程序集定义文件强制依赖方向。架构约束靠约定会腐化，靠编译器才可靠。
+        </p>
+
+        <h3>确定性模拟：让玩法结果可被自动验证</h3>
+        <p>
+          引入确定性模拟框架，保证同一输入序列产生同一结果。
+          这使「玩法逻辑正确」从只能手动试玩，变成了可以在测试里断言的事情。
+        </p>
+      </div>
+
+      <div class="notice">
+        <span>提示</span>
+        <span>
+          <strong>204 个测试用例尚未在 Unity 中实跑</strong>（本机无 Unity 环境）。
+          投简历前请在 Unity Test Runner 中运行并保存结果截图——写进简历的数字必须亲眼验证过。
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">测试覆盖了什么</h2>
+      <p class="section__desc">
+        我测的不是"功能能不能跑"，而是<strong>"扩展会不会破坏既有流程"</strong>。
+        这两件事的区别，决定了项目能不能长期迭代。
+      </p>
+      <div class="capability-grid">
+        <div class="capability">
+          <h3 class="capability__title">状态机</h3>
+          <ul class="capability__list">
+            <li>Light / Sort / Drag 三原语状态机</li>
+            <li>非法转移与边界输入</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">系统</h3>
+          <ul class="capability__list">
+            <li>经济系统（Echo Economy）</li>
+            <li>存档与读取一致性</li>
+            <li>子系统守卫（Subsystem Guard）</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">内容完整性</h3>
+          <ul class="capability__list">
+            <li>关卡配置数据完整性</li>
+            <li>叙事配置校验</li>
+            <li>重启与可达性（避免玩家卡死）</li>
+          </ul>
+        </div>
+        <div class="capability">
+          <h3 class="capability__title">表现与流程</h3>
+          <ul class="capability__list">
+            <li>PlayMode 冒烟</li>
+            <li>音效播放</li>
+            <li>对象池与内存复用</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">设计交付</h2>
+      <p class="section__desc">
+        以下均为本人产出的设计交付稿，非 AI 生成。
+      </p>
+      <div class="gallery">
+        <figure>
+          <img src="../assets/img/aoli-title.jpg" alt="标题界面设计稿" loading="lazy">
+          <figcaption>标题界面</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/aoli-mainmenu.jpg" alt="主菜单设计稿" loading="lazy">
+          <figcaption>主菜单</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/aoli-memorywall.jpg" alt="记忆墙设计稿" loading="lazy">
+          <figcaption>记忆墙（拼合玩法主界面）</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/aoli-hud.jpg" alt="游戏内 HUD 设计稿" loading="lazy">
+          <figcaption>游戏内 HUD</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/aoli-tokens.jpg" alt="设计令牌规范" loading="lazy">
+          <figcaption>设计令牌规范（双态色板）</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/img/aoli-mobile-memory.jpg" alt="移动端记忆墙设计稿" loading="lazy">
+          <figcaption>移动端记忆墙</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <h2 class="section__title">面试时会怎么讲这个项目</h2>
+      <div class="prose">
+        <p>
+          <strong>问：8 个谜题为什么收敛成 3 个原语？</strong><br>
+          降低判定与接入的分支数，让新增谜题变成数据工作而非编码工作。这是技术策划的核心价值——
+          不是自己实现得快，是让别人不需要你也能加内容。
+        </p>
+        <p>
+          <strong>问：你的测试和别人有什么不一样？</strong><br>
+          我测的不是功能能不能跑，是扩展会不会破坏既有流程。
+          重启可达性、配置完整性、子系统守卫这类用例，保证的是"下一个内容加进来时不会炸"。
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>数据实测于 2026-09-17，来源为本机 Unity 工程，可复现。</p>
+    <p>页面图片为本人设计交付稿，非 AI 生成。</p>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
