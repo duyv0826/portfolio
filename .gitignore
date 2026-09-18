@@ -4,3 +4,4 @@ verify/*_out*.txt
 __pycache__/
 *.pyc
 .DS_Store
+verify/live_check.html
