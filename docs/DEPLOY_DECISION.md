@@ -132,9 +132,28 @@ bash docs/verify_archive.sh exp-XXXXXXXX-HHMMSS.tgz
 > 第一次跑反证时，它自己抓出了一个真 bug：`printf | while read` 让 `while` 跑在子 shell，里面累加的失败数传不回父进程 → **SQL 检查静默失效**（掏空 SQL 却判定通过）。已改成先落成文件再重定向读。
 > 这正是为什么校验器必须先做反证——一个永远通过的检查是负资产。
 
-### 最后一步（脚本替代不了）
+### 最后一步：真跑 `SELECT COUNT(*)`
 
-MySQL dump 要真验证，**必须在本地起实例导入后跑 `SELECT COUNT(*)`**——不是看文件大小，也不是看有没有 `CREATE TABLE`。
+文件大小和有没有 `CREATE TABLE` 都不算数。`docs/verify_mysql_dump.py` 分两层，且**不互相冒充**：
+
+```bash
+python docs/verify_mysql_dump.py exp-xxx/11-newapi.sql        # A 层 +（可能时）B 层
+python docs/verify_mysql_dump.py <file> --no-docker           # 只跑 A 层
+python docs/verify_mysql_dump.py --self-test                  # 反证测试
+```
+
+| 层 | 做什么 | 能力边界 |
+|---|---|---|
+| **A 层**（离线，永远可跑） | 括号/引号配对、mysqldump 结尾标记、`CREATE TABLE` 与 `INSERT` 的表名一致、逐表解析行数 | 只能证明**文件结构完整**，**不能**证明能导入、行数对得上 |
+| **B 层**（需 docker daemon） | 起临时 `mariadb:11` 容器 → 导入 → **逐表 `SELECT COUNT(*)`** → 与 A 层解析行数**对账** → 销毁容器 | 这才是真验证 |
+
+**环境不具备时（docker 没启动）B 层报 SKIP 并按退出码 1 失败**——绝不用 A 层的通过冒充 B 层。当前本机状态：Docker CLI 29.7.2 已装但 **daemon 未运行**，所以 B 层尚未真跑过。
+
+反证（A 层，已实跑通过）：完整 dump 不误报 / 截断 / 括号不配对 / 只有 INSERT 没有 CREATE / INSERT 引用未定义的表 —— 5 例全部按期望失败。
+
+> 反证又抓出一个真 bug：原先用「一个 alternation + 硬编码 `group(1)`」匹配 `` `db`.`tbl` `` 与 `` `tbl` `` 两种写法，**Python 捕获组按整个 pattern 的左括号顺序编号，不按命中的分支**，表名实际落在 group(5) → 解析出 `None` → 多张表塌进同一个 key → "引用未定义的表"检查静默失效。已改为两个独立命名正则。
+
+⚠️ Windows 下给 Python 传路径要用 `cygpath -w`：Git Bash 的 `/tmp/...` 传给原生 Windows 的 Python 会报"文件不存在"。
 
 ## 八、附：续费后的导出优先级（P0 优先，通常只有几 MB）
 
