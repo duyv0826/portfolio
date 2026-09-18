@@ -1,6 +1,8 @@
 [
-  {
-    "url": "/assets/aiart/style_verify_realphoto.png",
-    "name": "style_verify_realphoto"
-  }
+  { "id": "g1", "url": "", "name": "青峦山居 · 概念图", "artist": "", "source": "" },
+  { "id": "g2", "url": "", "name": "听雨亭 · 场景原画", "artist": "", "source": "" },
+  { "id": "g3", "url": "", "name": "山水生成 · 笔触测试", "artist": "", "source": "" },
+  { "id": "g4", "url": "", "name": "雾舟 · 关卡草图", "artist": "", "source": "" },
+  { "id": "g5", "url": "", "name": "听雨装置 · 投影映射", "artist": "", "source": "" },
+  { "id": "g6", "url": "", "name": "角色设定 · 草稿", "artist": "", "source": "" }
 ]

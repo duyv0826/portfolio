@@ -1,159 +1,145 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>洪兄 · 互动媒体艺术 / 游戏设计作品集</title>
-<style>
-  :root{
-    --bg:#0e0f13; --bg2:#16181f; --fg:#e8eaf0; --muted:#9aa0ad;
-    --accent:#6c8cff; --accent2:#36d6c3; --line:#262a36; --card:#1a1d26;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-    background:var(--bg);color:var(--fg);line-height:1.7}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(10px);
-    background:rgba(14,15,19,.7);border-bottom:1px solid var(--line)}
-  nav{display:flex;justify-content:space-between;align-items:center;height:60px}
-  nav .logo{font-weight:700;letter-spacing:.5px}
-  nav ul{display:flex;gap:24px;list-style:none;font-size:14px;color:var(--muted)}
-  nav ul a:hover{color:var(--fg)}
-  .hero{padding:120px 0 90px;text-align:center;
-    background:radial-gradient(900px 400px at 50% -10%,rgba(108,140,255,.18),transparent)}
-  .hero h1{font-size:46px;line-height:1.2;margin-bottom:16px}
-  .hero .tag{color:var(--accent2);font-weight:600;letter-spacing:2px}
-  .hero p{color:var(--muted);max-width:620px;margin:18px auto 0}
-  .btn{display:inline-block;margin-top:30px;padding:12px 28px;border-radius:999px;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0e0f13;font-weight:700}
-  section{padding:80px 0}
-  h2{font-size:30px;margin-bottom:8px}
-  .sub{color:var(--muted);margin-bottom:40px}
-  .about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
-  .about p{color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
-    overflow:hidden;transition:.25s;cursor:pointer;display:block}
-  .card:hover{transform:translateY(-6px);border-color:var(--accent)}
-  .thumb{height:170px;background:linear-gradient(135deg,#222638,#2c3350)}
-  .card .body{padding:16px 18px}
-  .card h3{font-size:17px;margin-bottom:6px}
-  .card span{font-size:13px;color:var(--muted)}
-  .card p.desc{font-size:13px;color:var(--muted);margin-top:8px}
-  .contact{text-align:center}
-  .contact a{color:var(--accent);font-weight:600}
-  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);
-    font-size:13px;text-align:center}
-  .hint{color:var(--muted);font-size:14px}
-  @media(max-width:760px){.about,.grid{grid-template-columns:1fr}.hero h1{font-size:34px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>洪昺森 · 互动媒体艺术与游戏设计作品集</title>
+  <meta name="description" content="澳门科技大学互动媒体艺术·游戏设计方向研究生洪昺森的作品集：可玩叙事、互动影像与媒体艺术装置。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
 </head>
 <body>
-<header>
-  <nav class="wrap">
-    <div class="logo">洪兄 / HONG</div>
-    <ul>
-      <li><a href="#about">关于</a></li>
-      <li><a href="#works">作品</a></li>
-      <li><a href="#gallery">图库</a></li>
-      <li><a href="#contact">联系</a></li>
-    </ul>
+
+<!-- ===== 图标 Sprite（15 枚 inline SVG 描边图标，P0-1） ===== -->
+<svg width="0" height="0" style="display:none" aria-hidden="true" focusable="false">
+  <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="icon-external" viewBox="0 0 24 24"><path d="M15 4h5v5M20 4L10 14M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></symbol>
+  <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M3 6h18v12H3Z"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="icon-gamepad" viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 4 4 4 4 0 0 1-4 4H7a4 4 0 0 1-4-4 4 4 0 0 1 4-4Z"/><path d="M9 11v4M7 13h4"/><circle cx="15.5" cy="12" r="0.8"/><circle cx="17.5" cy="14" r="0.8"/></symbol>
+  <symbol id="icon-image" viewBox="0 0 24 24"><path d="M4 5h16v14H4Z"/><path d="M4 16l5-5 4 4 3-3 4 4"/><circle cx="9" cy="9" r="1.5"/></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M3 12l8.5-8.5a2 2 0 0 1 2.83 0l6.17 6.17a2 2 0 0 1 0 2.83L13 20a2 2 0 0 1-2.83 0L3 12Z"/><circle cx="8.5" cy="8.5" r="1.2"/></symbol>
+  <symbol id="icon-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7Z"/></symbol>
+  <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="icon-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+  <symbol id="icon-github" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.48A10.02 10.02 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></symbol>
+  <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+</svg>
+
+<!-- ===== 全局 Header ===== -->
+<header class="site-header" data-scrolled="false">
+  <div class="header-inner container">
+    <a class="brand" href="#/">洪昺森<span class="brand-sub"> · 作品集</span></a>
+    <nav class="nav" aria-label="主导航">
+      <a class="nav-link" href="#works">作品</a>
+      <a class="nav-link" href="#gallery">图库</a>
+      <a class="nav-link" href="#contact">联系</a>
+    </nav>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="打开导航">
+      <svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-menu"/></svg>
+    </button>
+  </div>
+  <nav id="mobile-nav" class="mobile-nav" hidden aria-label="移动端导航">
+    <a class="mobile-link" href="#works">作品</a>
+    <a class="mobile-link" href="#gallery">图库</a>
+    <a class="mobile-link" href="#contact">联系</a>
   </nav>
 </header>
 
-<section class="hero wrap">
-  <div class="tag">INTERACTIVE MEDIA · GAME DESIGN</div>
-  <h1>用交互与游戏<br/>讲述可以被玩的故事</h1>
-  <p>澳门科技大学 互动媒体艺术 · 游戏设计方向研究生。专注玩法原型、叙事交互与媒体艺术装置的创作与实现。</p>
-  <a class="btn" href="#works">查看作品</a>
-</section>
+<main id="app">
 
-<section id="about" class="wrap">
-  <h2>关于我</h2>
-  <div class="sub">ABOUT</div>
-  <div class="about">
-    <p>我关注“人如何与数字系统互动”——从独立游戏的原型设计，到结合传感器与投影的互动装置。本科与研究生阶段积累了 Unity / 原型开发 / 用户测试的经验，毕业作品将围绕 <strong>可玩叙事</strong> 展开。</p>
-    <p>技能：Unity · C# · 原型设计 · 交互叙事 · 基础 3D /  shader · 用户研究与可用性测试。持续在小黑盒与知乎输出游戏设计相关内容。</p>
+  <!-- ===== 列表 / 首页视图 ===== -->
+  <div id="list-view">
+
+    <!-- Hero -->
+    <section class="hero container" aria-labelledby="hero-title">
+      <p class="hero-eyebrow">互动媒体艺术 · 游戏设计</p>
+      <h1 class="hero-title" id="hero-title">洪昺森</h1>
+      <p class="hero-lede">澳门科技大学研究生，专注可玩叙事与互动影像。以下是近年的精选作品。</p>
+      <div class="hero-actions">
+        <a class="btn btn--primary" href="#work/aoli-guangjing">查看代表作<svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
+        <a class="btn btn--ghost" href="#gallery">浏览图库</a>
+      </div>
+      <ul class="hero-preview" id="hero-preview" role="list" aria-label="精选作品预览"></ul>
+    </section>
+
+    <!-- About -->
+    <section class="about container" id="about" aria-labelledby="about-title">
+      <h2 class="section-title" id="about-title"><span class="section-index">01</span>关于</h2>
+      <div class="about-grid">
+        <div class="about-bio">
+          <p class="about-lead">我关注「人如何与数字系统互动」——从独立游戏的原型设计，到结合传感器与投影的互动装置。研究生阶段围绕可玩叙事展开，探索让玩家选择真正改变故事走向与情绪体验的设计方法。</p>
+          <p>技能：Unity · C# · 原型设计 · 交互叙事 · 基础 3D / Shader · 用户研究与可用性测试。持续在小黑盒与知乎输出游戏设计相关的方法论与行业观察。</p>
+        </div>
+        <aside class="about-meta">
+          <dl class="meta-list">
+            <div class="meta-row"><dt>院校</dt><dd>澳门科技大学</dd></div>
+            <div class="meta-row"><dt>方向</dt><dd>互动媒体艺术 · 游戏设计</dd></div>
+          </dl>
+          <ul class="ext-links" role="list">
+            <li><span class="ext-link is-todo" data-todo="待补充真实主页 URL"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-external"/></svg>小黑盒<span class="mono-tag">待补链</span></span></li>
+            <li><span class="ext-link is-todo" data-todo="待补充真实主页 URL"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-link"/></svg>知乎<span class="mono-tag">待补链</span></span></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 精选作品 -->
+    <section class="works container" id="works" aria-labelledby="works-title">
+      <h2 class="section-title" id="works-title"><span class="section-index">02</span>精选作品</h2>
+      <ul class="works-grid" id="works-grid" role="list"></ul>
+    </section>
+
+    <!-- 图库 -->
+    <section class="gallery container" id="gallery" aria-labelledby="gallery-title">
+      <h2 class="section-title" id="gallery-title"><span class="section-index">03</span>图库</h2>
+      <ul class="gallery-grid" id="gallery-grid" role="list"></ul>
+    </section>
+
+    <!-- 联系 -->
+    <section class="contact container" id="contact" aria-labelledby="contact-title">
+      <h2 class="section-title" id="contact-title"><span class="section-index">04</span>联系</h2>
+      <ul class="contact-list" role="list">
+        <li><a class="contact-link" href="mailto:2260030089@student.must.edu.mo"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-mail"/></svg><span>邮箱</span><svg class="icon icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-external"/></svg></a></li>
+        <li><a class="contact-link" href="https://github.com/duyv0826" target="_blank" rel="noopener noreferrer"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-github"/></svg><span>GitHub</span></a></li>
+        <li><span class="contact-link is-todo" data-todo="待补充真实主页 URL"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-link"/></svg><span>小黑盒</span><span class="mono-tag">待补链</span></span></li>
+        <li><span class="contact-link is-todo" data-todo="待补充真实主页 URL"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-link"/></svg><span>知乎</span><span class="mono-tag">待补链</span></span></li>
+      </ul>
+    </section>
+
   </div>
-</section>
 
-<section id="works" class="wrap">
-  <h2>精选作品</h2>
-  <div class="sub">SELECTED WORKS — 在 <code>projects.json</code> 中增删条目即可，无需改动本文件</div>
-  <div class="grid" id="works-grid">
-    <p class="hint">作品加载中…</p>
-  </div>
-</section>
+  <!-- ===== 作品详情视图（JS 填充） ===== -->
+  <div id="detail-view" hidden></div>
 
-<section id="gallery" class="wrap">
-  <h2>作品图库</h2>
-  <div class="sub">GALLERY — 由图床桶自动生成（gallery.json）</div>
-  <div class="grid" id="gallery-grid">
-    <p class="hint">图库加载中…</p>
-  </div>
-</section>
+  <!-- ===== 404 / 未知 hash 回退 ===== -->
+  <section id="notfound-view" class="notfound container" hidden>
+    <p class="nf-code mono-tag">404</p>
+    <h1 class="nf-title">页面走丢了</h1>
+    <p class="nf-text">你访问的链接不存在或已移动，下面是回家的路。</p>
+    <a class="btn btn--primary" href="#/">返回首页<svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow-right"/></svg></a>
+  </section>
 
-<section id="contact" class="wrap contact">
-  <h2>联系我</h2>
-  <div class="sub">CONTACT</div>
-  <p>合作 / 交流欢迎来信：<a href="mailto:you@example.com">you@example.com</a></p>
-  <p style="color:var(--muted);margin-top:10px">小黑盒 / 知乎：@洪兄（替换为你的主页）</p>
-</section>
+</main>
 
-<footer>© 2026 洪兄 · 本页为 COS 静态站脚手架（数据驱动版），内容请替换为真实作品。</footer>
+<!-- ===== 灯箱（全局单例） ===== -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="图片查看器">
+  <button class="lightbox-close" type="button" aria-label="关闭查看器"><svg class="icon icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-close"/></svg></button>
+  <img class="lightbox-img" src="" alt="" />
+  <p class="lightbox-cap"></p>
+</div>
 
-<script>
-fetch('projects.json')
-  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-  .then(list => {
-    const grid = document.getElementById('works-grid');
-    if (!Array.isArray(list) || list.length === 0) {
-      grid.innerHTML = '<p class="hint">暂无作品，去 projects.json 添加吧。</p>';
-      return;
-    }
-    grid.innerHTML = list.map(p => {
-      const bg = p.img
-        ? `style="background-image:url('${p.img}');background-size:cover;background-position:center"`
-        : '';
-      const inner = `
-        <div class="thumb" ${bg}></div>
-        <div class="body">
-          <h3>${p.title || '未命名作品'}</h3>
-          <span>${p.tag || ''}</span>
-          ${p.desc ? `<p class="desc">${p.desc}</p>` : ''}
-        </div>`;
-      return p.link
-        ? `<a class="card" href="${p.link}" target="_blank" rel="noopener">${inner}</a>`
-        : `<div class="card">${inner}</div>`;
-    }).join('');
-  })
-  .catch(err => {
-    document.getElementById('works-grid').innerHTML =
-      '<p class="hint">作品列表加载失败：' + err.message +
-      '。请确认 projects.json 已与 index.html 一同上传到桶根目录；本地直接双击打开（file://）会因浏览器安全策略无法读取 JSON，需用本地服务器预览。</p>';
-  });
+<!-- ===== Footer ===== -->
+<footer class="site-footer container">
+  <p class="footer-copy">© 2026 洪昺森 · 互动媒体艺术 / 游戏设计</p>
+  <button class="to-top" type="button" aria-label="返回顶部"><svg class="icon icon--md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow-up"/></svg></button>
+</footer>
 
-// 图库：拉取图床桶生成的 gallery.json（构建期由脚本生成，运行时静态消费，无需密钥）
-fetch('gallery.json')
-  .then(r => r.ok ? r.json() : [])
-  .then(list => {
-    const grid = document.getElementById('gallery-grid');
-    if (!Array.isArray(list) || list.length === 0) {
-      grid.innerHTML = '<p class="hint">暂无图库。填好密钥后运行 `python create_cos_buckets.py --gallery` 生成 gallery.json，连同站点一起上传即可。</p>';
-      return;
-    }
-    grid.innerHTML = list.map(p => `
-      <a class="card" href="${p.url}" target="_blank" rel="noopener">
-        <div class="thumb" style="background-image:url('${p.url}');background-size:cover;background-position:center"></div>
-        <div class="body"><h3>${p.name || '图片'}</h3></div>
-      </a>`).join('');
-  })
-  .catch(() => {
-    document.getElementById('gallery-grid').innerHTML =
-      '<p class="hint">图库加载失败：请确认 gallery.json 已上传到桶根目录。</p>';
-  });
-</script>
 </body>
 </html>

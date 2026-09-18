@@ -1,0 +1,53 @@
+name: CI · P0 红线校验
+
+# 部署不走 Actions：该仓库 Pages 已配置为 build_type=legacy（main 根目录自动部署，状态 built）。
+# 这里只做质量闸门——push 到 main 后自动跑，红线破了立刻红灯。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: P0 红线与语法校验
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JS 语法
+        run: node --check app.js
+
+      - name: JSON 数据可解析
+        run: |
+          node -e "['projects.json','gallery.json'].forEach(f=>{JSON.parse(require('fs').readFileSync(f,'utf8'));console.log(f,'OK')})"
+
+      - name: 无编造外链（hongxiong.* 已清除）
+        run: |
+          if grep -rniE 'hongxiong' index.html; then
+            echo "::error::发现编造外链残留"; exit 1
+          fi
+          echo "OK"
+
+      - name: 无 emoji 图标
+        run: |
+          if grep -rlP '[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}]' index.html app.js styles.css projects.json gallery.json; then
+            echo "::error::发现 emoji"; exit 1
+          fi
+          echo "OK"
+
+      - name: 无外部 JS/CSS 依赖（Google Fonts 除外）
+        run: |
+          hits=$(grep -oE 'src="https?://[^"]+"|href="https?://[^"]+\.(js|css)"' index.html | grep -v 'fonts.googleapis\|fonts.gstatic' || true)
+          if [ -n "$hits" ]; then echo "::error::存在外部脚本/样式: $hits"; exit 1; fi
+          echo "OK"
+
+      - name: 图片来源必须是相对路径或 https（禁图床热链）
+        run: |
+          bad=$(grep -oE '"(img|url)":\s*"[^"]*"' projects.json gallery.json | grep -vE 'https://|assets/|""' || true)
+          if [ -n "$bad" ]; then echo "::error::可疑图源: $bad"; exit 1; fi
+          echo "OK"

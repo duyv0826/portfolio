@@ -1,51 +1,226 @@
 [
   {
+    "id": "aoli-guangjing",
+    "title": "澳里·光景",
+    "tag": "学位作品 / 互动叙事 · Unity",
+    "desc": "以东方写意山水为美术基调的可玩叙事作品：玩家在雨天的青峦山居中行走，通过选择改变故事走向与多结局。核心系统是「天气—情绪—选择」的叙事反馈回路。",
+    "img": "",
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": true,
+    "year": "2026",
+    "role": "概念 · 叙事设计 · Unity 实现",
+    "medium": "Unity / 实时渲染 / 交互装置",
+    "detail": {
+      "overview": [
+        "《澳里·光景》是本人的研究生学位作品，一部以东方写意山水为视觉语言的可玩叙事作品。故事发生在一座终年落雨的青峦山居，玩家以第一视角行走于山水之间，通过关键节点的选择推动叙事，并走向多个结局。",
+        "作品的核心设计命题，是让「环境即叙事」——雨势、雾气、光线随玩家情绪状态实时变化，选择与反馈构成一个可被玩家感知的回路，而非单纯的文字分支。本作品下设若干可玩叙事子项目，其中《青峦·听雨》为已成型的核心章节。"
+      ],
+      "storyTree": [
+        {
+          "id": "root",
+          "label": "抵达青峦山居",
+          "children": [
+            {
+              "id": "a",
+              "label": "循声入亭",
+              "children": [
+                {
+                  "id": "a1",
+                  "label": "听雨 · 静观",
+                  "children": [
+                    { "id": "a1x", "label": "结局：山雾散" }
+                  ]
+                },
+                {
+                  "id": "a2",
+                  "label": "听雨 · 寻人",
+                  "children": [
+                    { "id": "a2x", "label": "结局：归舟" }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "b",
+              "label": "绕径上山",
+              "children": [
+                {
+                  "id": "b1",
+                  "label": "遇樵者",
+                  "children": [
+                    { "id": "b1x", "label": "结局：云深处" }
+                  ]
+                },
+                {
+                  "id": "b2",
+                  "label": "独行",
+                  "children": [
+                    { "id": "b2x", "label": "结局：空山" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "devNotes": [
+        "使用 Unity 搭建第一人称行走与天气系统，以自定义 shader 实现雨幕与雾气的情绪化渐变。",
+        "叙事数据驱动：分支结构以 JSON 配置，便于在不改代码的前提下调整剧情与结局。",
+        "用户测试发现「天气—情绪」反馈在低密度节点易被忽略，已通过声音线索强化感知。",
+        "性能上以 GPU instancing 处理雨粒子，移动端目标稳定 60fps。",
+        "待补充：完整版多结局解锁条件与隐藏章节设计文档。"
+      ],
+      "media": [
+        { "type": "image", "url": "", "caption": "青峦山居概念图（待补充授权图）", "artist": "", "source": "" }
+      ],
+      "links": [
+        { "label": "可玩 Demo", "url": "", "kind": "play" },
+        { "label": "设计文档", "url": "", "kind": "doc" }
+      ]
+    }
+  },
+  {
+    "id": "qingluan-tingyu",
+    "title": "青峦·听雨",
+    "tag": "毕业作品 / 互动叙事 · Unity",
+    "desc": "《澳里·光景》的可玩叙事子项目：以雨天青峦山居为场景，玩家通过选择改变故事走向与多结局。核心系统是「天气—情绪—选择」的叙事反馈回路。",
+    "img": "",
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": true,
+    "year": "2026",
+    "role": "叙事设计 · Unity 实现",
+    "medium": "Unity / 实时渲染",
+    "relation": "《澳里·光景》可玩叙事子项目",
+    "detail": {
+      "overview": [
+        "《青峦·听雨》是《澳里·光景》学位作品中已成型的核心可玩章节。玩家在雨天的青峦山居中行走，通过选择改变故事走向，并解锁多个结局。",
+        "本子项目验证了「天气—情绪—选择」叙事反馈回路的可玩性，是完整作品的交互骨架与情绪基调来源。"
+      ],
+      "storyTree": [
+        {
+          "id": "root",
+          "label": "入山",
+          "children": [
+            { "id": "s1", "label": "听雨", "children": [ { "id": "s1x", "label": "结局：山雾散" } ] },
+            { "id": "s2", "label": "寻人", "children": [ { "id": "s2x", "label": "结局：归舟" } ] }
+          ]
+        }
+      ],
+      "devNotes": [
+        "作为 vertical slice，优先打磨分支叙事与情绪反馈的可玩性，而非美术量。",
+        "待补充：完整章节的音频设计与性能 profiling 记录。"
+      ],
+      "media": [
+        { "type": "image", "url": "", "caption": "听雨场景原画（待补充授权图）", "artist": "", "source": "" }
+      ],
+      "links": [
+        { "label": "可玩 Demo", "url": "", "kind": "play" }
+      ]
+    }
+  },
+  {
+    "id": "room-of-choice",
     "title": "抉择的房间",
     "tag": "可玩网页游戏 / 分支叙事 · 纯前端",
     "desc": "关于选择与房间的叙事游戏：每一轮醒来都会忘记，每个结局都是一块拼图。4 章 18 结局 18 线索，线索图鉴承载跨轮记忆并解锁隐藏章节与真结局。零依赖纯前端，点开即玩。",
     "img": "",
-    "link": "https://duyv0826.github.io/room-of-choice/"
+    "artist": "",
+    "source": "",
+    "link": "https://duyv0826.github.io/room-of-choice/",
+    "featured": true,
+    "year": "2025",
+    "role": "玩法设计 · 全栈实现",
+    "medium": "HTML / CSS / 原生 JS",
+    "detail": {
+      "overview": [
+        "《抉择的房间》是一款零依赖的纯前端分支叙事网页游戏。玩家每一轮醒来都会忘记上一轮的抉择，唯有线索图鉴承载跨轮记忆。",
+        "全作 4 章、18 个结局、18 条线索；收集齐线索可解锁隐藏章节与真结局。点开即玩，无需安装。"
+      ],
+      "devNotes": [
+        "状态机驱动分支，所有剧情节点配置化，便于扩展结局与线索。",
+        "图鉴系统承担「跨轮记忆」叙事功能，是连接零散结局的核心机制。",
+        "纯静态托管，无任何构建步骤，可直接部署到任意静态空间。"
+      ],
+      "media": [
+        { "type": "image", "url": "", "caption": "游戏界面截图（待补充）", "artist": "", "source": "" }
+      ],
+      "links": [
+        { "label": "可玩 Demo", "url": "https://duyv0826.github.io/room-of-choice/", "kind": "play" }
+      ]
+    }
   },
   {
-    "title": "青峦·听雨",
-    "tag": "毕业作品 / 互动叙事 · Unity",
-    "desc": "以东方写意山水为美术基调的可玩叙事游戏：玩家在雨天的青峦山居中行走，通过选择改变故事走向与多结局。核心系统是「天气—情绪—选择」的叙事反馈回路。",
-    "img": "",
-    "link": ""
-  },
-  {
+    "id": "tingyu-ting-proto",
     "title": "听雨亭 · 叙事原型",
     "tag": "原型 / 叙事系统",
     "desc": "毕业作品的核心交互场景原型，验证分支叙事与情绪反馈的可玩性，作为完整游戏的 vertical slice。",
     "img": "",
-    "link": ""
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": false,
+    "year": "2025",
+    "role": "原型设计 · 实现",
+    "medium": "Unity"
   },
   {
+    "id": "shanshui-generator",
     "title": "山水生成器",
     "tag": "工具 / 程序化生成",
     "desc": "基于噪声场与笔触贴图的写意山水程序化生成小工具，批量产出概念背景与材质，服务美术管线。",
     "img": "",
-    "link": ""
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": false,
+    "year": "2024",
+    "role": "工具开发",
+    "medium": "Unity / Shader"
   },
   {
+    "id": "wuzhou-gamejam",
     "title": "雾舟 · Game Jam",
     "tag": "48h 原型 / 解谜",
     "desc": "限时 Game Jam 产出的水墨风解谜 demo：操控一叶孤舟穿越雾气迷宫，靠声与光辨向。",
     "img": "",
-    "link": ""
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": false,
+    "year": "2024",
+    "role": "玩法设计 · 实现",
+    "medium": "Unity"
   },
   {
+    "id": "tingyu-installation",
     "title": "听雨 · 媒体装置",
     "tag": "媒体艺术 / 传感器",
     "desc": "结合雨声传感器与投影的互动装置：观众靠近时，山水随雨声晕染、故事片段浮现。",
     "img": "",
-    "link": ""
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": false,
+    "year": "2025",
+    "role": "交互设计 · 装置实现",
+    "medium": "传感器 / 投影映射"
   },
   {
+    "id": "game-design-matrix",
     "title": "游戏设计内容矩阵",
     "tag": "内容创作 / 小黑盒 · 知乎",
     "desc": "持续输出游戏设计方法论与行业观察，已构建小黑盒（变现主力）+ 知乎（专业人设）双平台内容矩阵。",
     "img": "",
-    "link": ""
+    "artist": "",
+    "source": "",
+    "link": "",
+    "featured": false,
+    "year": "2023—至今",
+    "role": "内容创作",
+    "medium": "图文 / 视频"
   }
 ]
