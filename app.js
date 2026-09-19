@@ -40,6 +40,10 @@
   /* ---------------- 状态 ---------------- */
   var projects = [];
   var gallery = [];
+  // 数据是否已到位。冷启动时 boot() 里的 router() 是同步跑的，
+  // 此刻 projects 还是空数组，任何 #work/<id> 都会被误判成 404。
+  // 用这个开关让路由在「数据未到位」时暂不判详情页的生死。
+  var dataReady = false;
   var listView, detailView, notFoundView, worksGrid, heroPreview, galleryGrid;
 
   /* ---------------- 图标辅助 ---------------- */
@@ -304,7 +308,13 @@
 
   function router() {
     var r = parseHash();
-    if (r.view === 'detail') { renderDetail(r.id); return; }
+    if (r.view === 'detail') {
+      // 数据没回来之前不判死：否则「站外直接点开 #work/<id>」会先闪一次 404。
+      // 这里直接返回，等 loadProjects 的回调里再跑一次（那时 projects 已填充）。
+      if (!dataReady) return;
+      renderDetail(r.id);
+      return;
+    }
     if (r.view === 'notfound') { renderNotFound(); return; }
     // 列表视图
     detailView.hidden = true;
@@ -333,12 +343,22 @@
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (list) {
         projects = Array.isArray(list) ? list : [];
+        dataReady = true;
         renderHeroPreview();
         renderWorks();
+        // 数据到位后必须重跑一次路由：boot() 里的 router() 同步执行时 projects 还为空，
+        // 那时它对 #work/<id> 只能选择「什么都不做」。现在补判，深链才算真正落地。
+        // router() 幂等，列表视图下只是重设导航高亮 + 滚动定位，无副作用。
+        router();
       })
       .catch(function (err) {
+        projects = [];
+        // 失败也要置位：否则深链会永远停在「什么都不做」的状态，
+        // 与其白屏不如明确进 404（并给出失败原因）。
+        dataReady = true;
         if (worksGrid) worksGrid.innerHTML = '<li class="state-msg">作品加载失败，请稍后重试。(' + escapeHTML(err.message) + ')</li>';
         if (heroPreview) heroPreview.innerHTML = '';
+        router();
       });
   }
   function loadGallery() {

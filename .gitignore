@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 .DS_Store
 verify/live_check.html
+verify/shots/
