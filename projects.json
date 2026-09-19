@@ -7,7 +7,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": true,
     "year": "2026",
     "role": "概念 · 叙事设计 · Unity 实现",
@@ -92,18 +91,6 @@
           "artist": "",
           "source": ""
         }
-      ],
-      "links": [
-        {
-          "label": "可玩 Demo",
-          "url": "",
-          "kind": "play"
-        },
-        {
-          "label": "设计文档",
-          "url": "",
-          "kind": "doc"
-        }
       ]
     }
   },
@@ -115,7 +102,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": true,
     "year": "2026",
     "role": "叙事设计 · Unity 实现",
@@ -165,13 +151,6 @@
           "caption": "听雨场景原画（待补充授权图）",
           "artist": "",
           "source": ""
-        }
-      ],
-      "links": [
-        {
-          "label": "可玩 Demo",
-          "url": "",
-          "kind": "play"
         }
       ]
     }
@@ -225,7 +204,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": false,
     "year": "2025",
     "role": "原型设计 · 实现",
@@ -239,7 +217,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": false,
     "year": "2024",
     "role": "工具开发",
@@ -253,7 +230,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": false,
     "year": "2024",
     "role": "玩法设计 · 实现",
@@ -267,7 +243,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": false,
     "year": "2025",
     "role": "交互设计 · 装置实现",
@@ -281,7 +256,6 @@
     "img": "",
     "artist": "",
     "source": "",
-    "link": "",
     "featured": false,
     "year": "2023—至今",
     "role": "内容创作",

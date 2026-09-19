@@ -213,6 +213,46 @@ def scan_credits() -> None:
     else:
         PASSES.append("图片署名齐备或当前无站内引用")
 
+    # ---------- 死链：写了链接条目但 url 为空 / 不合规 ----------
+    # 为什么必须拦：这类条目在渲染层会被 safeUrl 静默丢弃，页面表现是
+    # 「这个项目本来就没有链接」——和真的没有链接的项目完全无法区分。
+    # 典型的沉默失效：数据里看着有，页面上什么都没有，也没人报错。
+    # 处置只有两种，都很容易：填上真实 url，或把条目删掉。
+    def is_safe_url(u: str) -> bool:
+        s = (u or "").strip()
+        if not s:
+            return False
+        # 与 site/app.js 的 safeUrl 同一套判据：剔控制字符后看协议头
+        probe = re.sub(r"[\x00-\x20\x7f]", "", s).lower()
+        if probe.startswith("//"):
+            return False
+        if re.match(r"^[a-z][a-z0-9+.\-]*:", probe):
+            return bool(re.match(r"^(https?:|mailto:)", probe))
+        return True
+
+    # 判据不是「url 为空」本身，而是「渲染出来什么都看不见」。
+    #   · 图库空 url → 会渲染成排版占位卡（首字 + 名称），用户看得见，是诚实占位 → 只警告
+    #   · 项目链接空 url → 渲染层直接跳过，页面上跟「本来就没链接」一模一样 → 死数据，必须处理
+    dead: list[str] = []
+    for p in projects:
+        pid = p.get("id") or "?"
+        for l in (p.get("detail") or {}).get("links") or []:
+            u = (l.get("url") or "").strip()
+            if not is_safe_url(u):
+                dead.append(f"projects.json#{pid} 链接「{l.get('label') or '未命名'}」url={u!r} 渲染不出任何东西")
+        if "link" in p and not is_safe_url((p.get("link") or "").strip()):
+            dead.append(f"projects.json#{pid}.link={(p.get('link') or '')!r} 渲染不出任何东西")
+    check("无死链（url 为空/不合规的链接会被渲染层静默丢弃）", not dead,
+          f"{len(dead)} 条，例：{dead[0]}" if dead else "")
+
+    g_pending = [g.get("name") or g.get("id") for g in gallery
+                 if not is_safe_url((g.get("url") or "").strip())]
+    if g_pending:
+        warn("图库仍有条目缺真实图片（当前以排版占位呈现，用户可见）",
+             f"{len(g_pending)}/{len(gallery)} 项：{g_pending[0]}")
+    else:
+        PASSES.append("图库条目均有真实图片")
+
 
 def scan_consistency() -> None:
     print("== 一致性 / 元信息 ==")
