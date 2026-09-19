@@ -1,0 +1,45 @@
+{
+  "_readme": [
+    "图片署名表（P0 红线：只用真实来源图片，禁止 AI 生成原创图，禁止外链图床）。",
+    "用法：把真实图片放进 site/assets/img/，然后在下面按 id 登记文件名 + 作者 + 来源链接。",
+    "规则：",
+    "  1. url 必须是以 assets/img/ 开头的站内相对路径，不要填外部图床链接（会随图床策略失效）。",
+    "  2. artist 填画师/摄影师署名（平台 ID 也算，如 '小黑盒@某某'），source 填原帖或作品页 URL。",
+    "  3. 未登记的图片不要上线——verify/verify_site.py 会把它当作红线违规报出来。",
+    "  4. 自绘 SVG 图标（favicon.svg / og-cover.svg）属本站原创设计，不受此表约束。"
+  ],
+  "images": [
+    {
+      "id": "hero-aoli-guangjing",
+      "url": "assets/img/aoli-guangjing-cover.jpg",
+      "name": "澳里·光景 · 主视觉",
+      "artist": "",
+      "source": "",
+      "status": "PENDING"
+    },
+    {
+      "id": "hero-qingluan-tingyu",
+      "url": "assets/img/qingluan-tingyu-cover.jpg",
+      "name": "青峦·听雨 · 主视觉",
+      "artist": "",
+      "source": "",
+      "status": "PENDING"
+    },
+    {
+      "id": "hero-room-of-choice",
+      "url": "assets/img/room-of-choice-cover.jpg",
+      "name": "抉择的房间 · 主视觉",
+      "artist": "",
+      "source": "",
+      "status": "PENDING"
+    },
+    {
+      "id": "detail-aoli-guangjing-01",
+      "url": "assets/img/aoli-guangjing-01.jpg",
+      "name": "澳里·光景 · 实机截图",
+      "artist": "",
+      "source": "",
+      "status": "PENDING"
+    }
+  ]
+}

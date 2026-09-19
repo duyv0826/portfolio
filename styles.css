@@ -157,9 +157,6 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
   padding:var(--space-2) var(--space-3);transition:color var(--motion-base) var(--ease-standard);}
 .ext-link:hover{color:var(--accent);}
 
-/* 未拿到真实 URL 的入口：不跳转、不编造，虚线弱化 + 「待补链」标记 */
-.ext-link.is-todo,.contact-link.is-todo{cursor:default;color:var(--fg-3);border-style:dashed;}
-.ext-link.is-todo:hover,.contact-link.is-todo:hover{color:var(--fg-3);border-color:var(--border);}
 
 /* ============================================================
    精选作品网格
@@ -315,4 +312,47 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible{
   *,*::before,*::after{transition-duration:0ms !important;animation-duration:0ms !important;animation-iteration-count:1 !important;}
   html{scroll-behavior:auto;}
   .lightbox-img{transform:none !important;}
+}
+
+/* ============================================================
+   无障碍 / 降级增强（skip-link、noscript、图标 Sprite 容器）
+   ============================================================ */
+/* 图标 Sprite 容器：用 CSS 而非内联 style 隐藏，便于启用严格 CSP */
+.icon-sprite{position:absolute;width:0;height:0;overflow:hidden;}
+
+.skip-link{
+  position:absolute;top:var(--space-2);left:var(--space-2);z-index:var(--z-top,100);
+  transform:translateY(-200%);
+  background:var(--accent);color:var(--bg);
+  font-family:var(--font-body);font-size:var(--text-sm);font-weight:590;
+  padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);
+  transition:transform var(--motion-fast) var(--ease-standard);
+}
+.skip-link:focus{transform:translateY(0);outline:none;box-shadow:var(--focus-ring);}
+
+.noscript-note{
+  margin:0;padding:var(--space-4) var(--space-5);
+  background:var(--accent-soft);color:var(--fg);
+  border-block-end:var(--hairline) solid var(--border);
+  font-family:var(--font-body);font-size:var(--text-sm);line-height:var(--leading-normal);
+  text-align:center;
+}
+
+/* 图片加载失败时由 JS 打标记，隐藏破图并露出占位底 */
+img[data-broken="true"]{display:none;}
+
+/* 灯箱无图时隐藏 <img>，避免露出破图边框（属性驱动，不用内联 style） */
+.lightbox-img[data-empty="true"]{display:none;}
+
+/* 素材未到位时的排版占位：居中显示作品名首字，不做任何图像伪造 */
+.thumb-ph{position:relative;}
+/* Hero 缩略图没有图时也必须自己有高度，否则占位会塌成一条线 */
+.hero-thumb .thumb-ph{aspect-ratio:4 / 3;}
+.ph-mark{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(var(--text-xl),4vw,var(--text-3xl));
+  color:var(--fg-3);letter-spacing:var(--tracking-display);
+  user-select:none;pointer-events:none;
 }

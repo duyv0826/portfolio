@@ -21,13 +21,20 @@
   // 属性值统一用双引号包裹，escapeHTML 已转义双引号，可直接安全插值
   function escapeAttr(value) { return escapeHTML(value); }
 
-  // 仅放行 http(s) / 同源相对路径 / 锚点 / mailto；拒绝 javascript:/data: 等
+  // 仅放行 http(s) / mailto / 站内相对路径 / 锚点；拒绝 javascript:、data:、vbscript: 等
+  // 以及协议相对外链（//host/x）。判据是「协议头白名单」，
+  // 所以 assets/img/a.png 这类站内相对路径能正常通过。
   function safeUrl(value) {
     if (!value) return '';
     var u = String(value).trim();
-    if (/^(https?:\/\/|\/|#|\.\/|\.\.\/)/i.test(u)) return u;
-    if (/^mailto:/i.test(u)) return u;
-    return '';
+    if (u === '') return '';
+    // 剔除控制字符与空白后再判定，防 java\nscript: 这类绕过
+    var probe = u.replace(/[\u0000-\u0020\u007F]/g, '').toLowerCase();
+    if (probe.indexOf('//') === 0) return '';
+    if (/^[a-z][a-z0-9+.\-]*:/.test(probe)) {
+      return /^(https?:|mailto:)/.test(probe) ? u : '';
+    }
+    return u;
   }
 
   /* ---------------- 状态 ---------------- */
@@ -45,6 +52,21 @@
   }
 
   /* ---------------- 封面 / 占位（含 data-artist / data-source 接口，AC-04） ---------------- */
+  // 取首个字符（Array.from 才正确处理中文与代理对）
+  function firstChar(value) {
+    if (!value) return '';
+    var s = Array.from(String(value).trim());
+    return s.length ? s[0] : '';
+  }
+
+  // 素材未到位时的排版占位：显示作品名首字。
+  // 明确不做任何图像伪造（红线：不用 AI 生成图、不用外链图床凑数）。
+  function placeholderMark(title) {
+    var ch = firstChar(title);
+    if (!ch) return '';
+    return '<span class="ph-mark" aria-hidden="true">' + escapeHTML(ch) + '</span>';
+  }
+
   function coverInner(p, wrapperClasses, imgClass) {
     var artist = escapeAttr(p && p.artist ? p.artist : '');
     var source = escapeAttr(p && p.source ? p.source : '');
@@ -53,10 +75,11 @@
       var safe = safeUrl(p.img);
       if (safe) {
         imgTag = '<img class="' + imgClass + '" src="' + escapeAttr(safe) + '" alt="' +
-          escapeAttr(p.title) + ' 封面" loading="lazy" onerror="this.style.display=\'none\'">';
+          escapeAttr(p.title) + ' 封面" loading="lazy">';
       }
     }
-    return '<span class="' + wrapperClasses + '" data-artist="' + artist + '" data-source="' + source + '">' + imgTag + '</span>';
+    return '<span class="' + wrapperClasses + '" data-artist="' + artist + '" data-source="' + source + '">' +
+      imgTag + (imgTag ? '' : placeholderMark(p && p.title)) + '</span>';
   }
 
   /* ---------------- 渲染：Hero 预览（取 featured 前 3，AC-01 ≥3） ---------------- */
@@ -111,7 +134,7 @@
       var artist = escapeAttr(g.artist || '');
       var source = escapeAttr(g.source || '');
       var imgTag = url
-        ? '<img class="gallery-img" src="' + url + '" alt="' + name + '" loading="lazy" onerror="this.style.display=\'none\'">'
+        ? '<img class="gallery-img" src="' + url + '" alt="' + name + '" loading="lazy">'
         : '';
       var credit = (g.artist || g.source)
         ? '<span class="cap-credit">作品：' + (g.artist || '自绘') + (g.source ? ' · 来源：' + escapeHTML(g.source) : '') + '</span>'
@@ -119,7 +142,8 @@
       return '<li class="gallery-item">' +
         '<button class="gallery-trigger" type="button" aria-label="放大查看 ' + name + '" ' +
         'data-full="' + url + '" data-artist="' + artist + '" data-source="' + source + '">' +
-        '<span class="gallery-ph thumb-ph" data-artist="' + artist + '" data-source="' + source + '">' + imgTag + '</span>' +
+        '<span class="gallery-ph thumb-ph" data-artist="' + artist + '" data-source="' + source + '">' +
+        imgTag + (imgTag ? '' : placeholderMark(g.name)) + '</span>' +
         '</button>' +
         '<p class="gallery-cap"><span class="cap-name">' + name + '</span>' + credit + '</p></li>';
     }).join('');
@@ -171,8 +195,8 @@
           var u = escapeAttr(safeUrl(m.url || ''));
           var cap = escapeHTML(m.caption || '');
           var inner = u
-            ? '<img class="media-img" src="' + u + '" alt="' + cap + '" loading="lazy" onerror="this.style.display=\'none\'">'
-            : '<span class="thumb-ph media-ph"></span>';
+            ? '<img class="media-img" src="' + u + '" alt="' + cap + '" loading="lazy">'
+            : '<span class="thumb-ph media-ph">' + placeholderMark(m.caption) + '</span>';
           return '<figure class="media-item">' + inner + (cap ? '<figcaption class="cap-credit">' + cap + '</figcaption>' : '') + '</figure>';
         }).join('') + '</div></section>';
     }
@@ -218,7 +242,7 @@
     if (p.img) {
       var s = safeUrl(p.img);
       if (s) heroImg = '<img class="detail-img" src="' + escapeAttr(s) + '" alt="' +
-        escapeAttr(p.title) + ' 主图" loading="lazy" onerror="this.style.display=\'none\'">';
+        escapeAttr(p.title) + ' 主图" loading="lazy">';
     }
 
     // 元信息
@@ -234,7 +258,8 @@
       '<svg class="icon icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
       'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#icon-arrow-left"/></svg>返回作品</a></nav>' +
       '<header class="detail-head">' + tag + '<h1 class="detail-title" id="detail-title">' + escapeHTML(p.title) + '</h1>' + relation + '</header>' +
-      '<div class="detail-media"><span class="detail-hero thumb-ph" data-artist="' + artist + '" data-source="' + source + '">' + heroImg + '</span></div>' +
+      '<div class="detail-media"><span class="detail-hero thumb-ph" data-artist="' + artist + '" data-source="' + source + '">' +
+      heroImg + (heroImg ? '' : placeholderMark(p.title)) + '</span></div>' +
       '<div class="detail-body">' +
       '<div class="detail-overview"><h2 class="block-title">概述</h2>' + overviewHtml + '</div>' +
       '<aside class="detail-meta">' + meta +
@@ -260,7 +285,17 @@
   function parseHash() {
     var h = location.hash || '';
     var m = h.match(/^#work\/(.+)$/);
-    if (m) return { view: 'detail', id: decodeURIComponent(m[1]) };
+    if (m) {
+      var id;
+      try {
+        // 畸形百分号转义（如 #work/%）会让 decodeURIComponent 抛 URIError，
+        // 不接住的话整页路由会挂在白屏上
+        id = decodeURIComponent(m[1]);
+      } catch (err) {
+        return { view: 'notfound' };
+      }
+      return { view: 'detail', id: id };
+    }
     if (h === '' || h === '#' || h === '#/') return { view: 'list', section: '' };
     var known = ['#about', '#works', '#gallery', '#contact'];
     if (known.indexOf(h) >= 0) return { view: 'list', section: h.slice(1) };
@@ -321,16 +356,20 @@
     if (!lb) return;
     var img = lb.querySelector('.lightbox-img');
     var cap = lb.querySelector('.lightbox-cap');
-    if (full) {
-      img.style.display = '';
+    if (!full) {
+      img.setAttribute('data-empty', 'true');
+      img.removeAttribute('src');
+    } else {
+      img.removeAttribute('data-empty');
       img.src = full;
       img.alt = '作品大图';
-    } else {
-      img.style.display = 'none';
-      img.removeAttribute('src');
     }
-    cap.textContent = (artist ? '作品：' + artist : '') + (source ? ' · 来源：' + source : '') ||
-      (full ? '' : '图片暂未提供');
+    // 署名优先展示；无署名但有图时不误报「暂未提供」
+    if (artist || source) {
+      cap.textContent = (artist ? '作品：' + artist : '') + (source ? ' · 来源：' + source : '');
+    } else {
+      cap.textContent = full ? '暂无署名信息' : '图片暂未提供';
+    }
     lb.removeAttribute('hidden');
     requestAnimationFrame(function () { lb.classList.add('is-open'); });
   }
@@ -342,6 +381,13 @@
   }
 
   function initInteractions() {
+    // 图片加载失败统一处理：error 事件不冒泡，用捕获阶段委托，替代内联 onerror
+    // 目的：移除内联事件处理器后即可启用严格 CSP（无需 script-src 'unsafe-inline'）
+    document.addEventListener('error', function (e) {
+      var el = e.target;
+      if (el && el.tagName === 'IMG') el.setAttribute('data-broken', 'true');
+    }, true);
+
     var toggle = document.querySelector('.nav-toggle');
     var mobileNav = document.getElementById('mobile-nav');
     if (toggle && mobileNav) {

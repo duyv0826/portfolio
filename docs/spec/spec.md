@@ -157,7 +157,7 @@ cd <站点根> && python -m http.server 8080
 # 浏览器开 http://localhost:8080
 
 # 2. 核心成功流
-# 列表出现 7 条作品 → 点「抉择的房间」→ #work/room-of-choice 渲染详情（overview+media+links）→ 后退回列表
+# 列表出现 8 件作品 → 点「抉择的房间」→ #work/room-of-choice 渲染详情（overview+media+links）→ 后退回列表
 
 # 3. 关键错误流
 # 临时把 projects.json 改非法 JSON → 页面显示「加载失败」文案而非白屏；恢复后正常
@@ -174,9 +174,11 @@ cd <站点根> && python -m http.server 8080
 | 日期 | 变更内容 | 原因 | 影响范围 |
 |------|----------|------|----------|
 | 2026-09-18 | 初版 Spec v1.0 基于三文档生成 | Phase 1 三文档确认 | 全站 |
-| 2026-09-19 | 署名统一为真实姓名「洪昺森」（标题/品牌/首屏/页脚） | 旧版 Astro 已用过真实姓名，纯静态版回退成昵称 | 全站文案 |
-| 2026-09-19 | 清除编造外链：GitHub→`duyv0826`（已核验 200）、邮箱→`2260030089@student.must.edu.mo`；小黑盒/知乎无已验证 URL，改为 `is-todo` 占位（虚线弱化 + 「待补链」，不跳转） | 真实素材红线：假外链对访客即死链，比留空更糟 | 关于/联系区 |
-| 2026-09-19 | 新增 `verify/e2e.py` 端到端回归（Playwright，15 项覆盖 AC-01..AC-12 + P0 真实素材 + 控制台零错误），全绿 | Spec §12 端到端验证落地为可复跑脚本 | 新增 verify/ |
+| 2026-09-19 | 收尾加固（不改范围）：① 去内联 `style` 与 `onerror`，改用 CSS 类 + 事件委托，使站点可在严格 CSP（无 `unsafe-inline`）下运行；② `safeUrl` 判据改为协议头黑名单 → 修复站内相对路径被误杀（图片永不显示）；③ `parseHash` 对畸形 `%` 转义做 try/catch，修复导航白屏；④ 补 OG/Twitter/theme-color/favicon/robots/skip-link/noscript；⑤ 无图时以「作品名首字」排版占位，替代塌陷空白；⑥ 404 页样式外链化；⑦ 首页与 404 署名统一为「洪昺森」 | 收尾与部署打包 | index.html / app.js / styles.css / 404.html / 404.css / assets / verify |
+
+| 2026-09-19（第二批） | 素材收敛：① 小黑盒 / 知乎主页链接核实后实填（原「待补链」占位全部清除，连带清理 `.is-todo` 死代码）；② `projects.json` 为「游戏设计内容矩阵」补 `detail.links`（双平台主页）；③ 澄清《抉择的房间》可玩地址**此前已存在且存活**（`duyv0826.github.io/room-of-choice/`，HTTP 200），撤回站内重复副本以保单一真相源；④ `nginx.conf` 的 favicon 规则改为任意层级匹配；⑤ 渲染层新增 7 项外链断言（含 rel=noopener 与游离色块扫描） | 用户追问素材阻塞项后的收敛动作 | index.html / projects.json / styles.css / deploy/nginx.conf / verify/visual_check.py |
+
+**变更归类**：小改（未新增 API / 未新增表 / 影响页面 = 1 个静态页 + 404 页 / 未改核心流程），按 Spec §13 约定直接更新留痕，不走回 Phase 0。
 
 ---
 

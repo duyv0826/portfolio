@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="洪昺森 · 互动媒体艺术与游戏设计作品集">
+  <defs>
+    <linearGradient id="veil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0C0C0E"/>
+      <stop offset="1" stop-color="#16161A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#veil)"/>
+  <g fill="none" stroke="#2A2A30" stroke-width="2">
+    <path d="M0 96h1200"/>
+    <path d="M0 534h1200"/>
+  </g>
+
+  <g transform="translate(96 150)" fill="none" stroke="#E0A458" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="0" cy="0" r="14"/>
+    <path d="M0 14v60"/>
+    <path d="M0 44h-46v70"/>
+    <path d="M0 44h46v70"/>
+    <circle cx="-46" cy="126" r="10"/>
+    <circle cx="46" cy="126" r="10"/>
+    <circle cx="-46" cy="176" r="10"/>
+    <circle cx="46" cy="176" r="10"/>
+    <path d="M-46 136v30"/>
+    <path d="M46 136v30"/>
+  </g>
+
+  <g font-family="Inter, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" fill="#ECECEE">
+    <text x="300" y="250" font-size="76" font-weight="700" letter-spacing="-1.5">洪昺森</text>
+    <text x="300" y="316" font-size="34" font-weight="500" fill="#A6A6AE">互动媒体艺术 · 游戏设计</text>
+    <text x="300" y="366" font-size="28" font-weight="400" fill="#6C6C74">澳门科技大学 人文艺术学院</text>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" fill="#E0A458">
+    <text x="96" y="586" font-size="24" letter-spacing="6">PLAYABLE NARRATIVE</text>
+    <text x="96" y="88" font-size="22" letter-spacing="6">PORTFOLIO / 2026</text>
+  </g>
+</svg>

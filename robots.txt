@@ -1,0 +1,6 @@
+# 允许全部爬虫索引；站点为纯静态单页（hash 路由不产生独立 URL）
+User-agent: *
+Allow: /
+
+# 图片与文档素材目录不做额外限制，署名信息随图一起公开
+# sitemap 由 deploy/rsync-deploy.sh 在确定域名后写入（见 deploy/sitemap.xml.template）

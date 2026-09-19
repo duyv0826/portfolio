@@ -30,14 +30,20 @@
                   "id": "a1",
                   "label": "听雨 · 静观",
                   "children": [
-                    { "id": "a1x", "label": "结局：山雾散" }
+                    {
+                      "id": "a1x",
+                      "label": "结局：山雾散"
+                    }
                   ]
                 },
                 {
                   "id": "a2",
                   "label": "听雨 · 寻人",
                   "children": [
-                    { "id": "a2x", "label": "结局：归舟" }
+                    {
+                      "id": "a2x",
+                      "label": "结局：归舟"
+                    }
                   ]
                 }
               ]
@@ -50,14 +56,20 @@
                   "id": "b1",
                   "label": "遇樵者",
                   "children": [
-                    { "id": "b1x", "label": "结局：云深处" }
+                    {
+                      "id": "b1x",
+                      "label": "结局：云深处"
+                    }
                   ]
                 },
                 {
                   "id": "b2",
                   "label": "独行",
                   "children": [
-                    { "id": "b2x", "label": "结局：空山" }
+                    {
+                      "id": "b2x",
+                      "label": "结局：空山"
+                    }
                   ]
                 }
               ]
@@ -73,11 +85,25 @@
         "待补充：完整版多结局解锁条件与隐藏章节设计文档。"
       ],
       "media": [
-        { "type": "image", "url": "", "caption": "青峦山居概念图（待补充授权图）", "artist": "", "source": "" }
+        {
+          "type": "image",
+          "url": "",
+          "caption": "青峦山居概念图（待补充授权图）",
+          "artist": "",
+          "source": ""
+        }
       ],
       "links": [
-        { "label": "可玩 Demo", "url": "", "kind": "play" },
-        { "label": "设计文档", "url": "", "kind": "doc" }
+        {
+          "label": "可玩 Demo",
+          "url": "",
+          "kind": "play"
+        },
+        {
+          "label": "设计文档",
+          "url": "",
+          "kind": "doc"
+        }
       ]
     }
   },
@@ -105,8 +131,26 @@
           "id": "root",
           "label": "入山",
           "children": [
-            { "id": "s1", "label": "听雨", "children": [ { "id": "s1x", "label": "结局：山雾散" } ] },
-            { "id": "s2", "label": "寻人", "children": [ { "id": "s2x", "label": "结局：归舟" } ] }
+            {
+              "id": "s1",
+              "label": "听雨",
+              "children": [
+                {
+                  "id": "s1x",
+                  "label": "结局：山雾散"
+                }
+              ]
+            },
+            {
+              "id": "s2",
+              "label": "寻人",
+              "children": [
+                {
+                  "id": "s2x",
+                  "label": "结局：归舟"
+                }
+              ]
+            }
           ]
         }
       ],
@@ -115,10 +159,20 @@
         "待补充：完整章节的音频设计与性能 profiling 记录。"
       ],
       "media": [
-        { "type": "image", "url": "", "caption": "听雨场景原画（待补充授权图）", "artist": "", "source": "" }
+        {
+          "type": "image",
+          "url": "",
+          "caption": "听雨场景原画（待补充授权图）",
+          "artist": "",
+          "source": ""
+        }
       ],
       "links": [
-        { "label": "可玩 Demo", "url": "", "kind": "play" }
+        {
+          "label": "可玩 Demo",
+          "url": "",
+          "kind": "play"
+        }
       ]
     }
   },
@@ -146,10 +200,20 @@
         "纯静态托管，无任何构建步骤，可直接部署到任意静态空间。"
       ],
       "media": [
-        { "type": "image", "url": "", "caption": "游戏界面截图（待补充）", "artist": "", "source": "" }
+        {
+          "type": "image",
+          "url": "",
+          "caption": "游戏界面截图（待补充）",
+          "artist": "",
+          "source": ""
+        }
       ],
       "links": [
-        { "label": "可玩 Demo", "url": "https://duyv0826.github.io/room-of-choice/", "kind": "play" }
+        {
+          "label": "可玩 Demo",
+          "url": "https://duyv0826.github.io/room-of-choice/",
+          "kind": "play"
+        }
       ]
     }
   },
@@ -221,6 +285,20 @@
     "featured": false,
     "year": "2023—至今",
     "role": "内容创作",
-    "medium": "图文 / 视频"
+    "medium": "图文 / 视频",
+    "detail": {
+      "links": [
+        {
+          "label": "小黑盒主页",
+          "url": "https://xiaoheihe.cn/app/user/profile/81382527",
+          "kind": "doc"
+        },
+        {
+          "label": "知乎主页",
+          "url": "https://www.zhihu.com/people/76-11-10-24",
+          "kind": "doc"
+        }
+      ]
+    }
   }
 ]
