@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import pathlib
 import sys
 
 from playwright.sync_api import sync_playwright
@@ -70,6 +71,21 @@ def main() -> int:
         rep(pg.locator("#resume-view .resume-work").count() == 8,
             "简历列出 8 件作品", f"实得 {pg.locator('#resume-view .resume-work').count()}")
         rep(pg.locator("#resume-view .resume-print").count() == 1, "打印按钮存在")
+        rep(pg.locator("#resume-view .resume-download").count() == 1, "下载 PDF 入口存在")
+
+        # 静态快照必须真的能下：二进制最容易在部署链路里被悄悄搞坏
+        import urllib.request  # noqa: E402
+        try:
+            with urllib.request.urlopen(BASE + "/resume.pdf", timeout=30) as r:
+                raw = r.read()
+                ctype = r.headers.get("Content-Type", "")
+            local = pathlib.Path(__file__).resolve().parent.parent / "site" / "resume.pdf"
+            same = local.exists() and raw == local.read_bytes()
+            rep(ctype == "application/pdf" and len(raw) > 5000 and same,
+                "线上 resume.pdf 可下载且与本地字节一致",
+                f"类型={ctype} 大小={len(raw)} 一致={same}")
+        except Exception as e:  # noqa: BLE001
+            rep(False, "线上 resume.pdf 可下载且与本地字节一致", repr(e))
         rep(not errs, "简历控制台清洁", str(errs[:2]))
 
         pg.emulate_media(media="print")
