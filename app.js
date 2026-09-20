@@ -404,8 +404,15 @@
       (profile.headline ? '<p class="resume-headline">' + escapeHTML(profile.headline) + '</p>' : '') +
       (contactBits.length ? '<p class="resume-contact">' + contactBits.join('<span class="resume-sep">·</span>') + '</p>' : '') +
       '</div>' +
+      '<div class="resume-actions">' +
       '<button class="btn btn--ghost resume-print" type="button">' + icon('printer', 'sm') +
       '<span>打印 / 存为 PDF</span></button>' +
+      // 静态快照：由 verify/make_resume_pdf.py 生成，方便直接丢给招聘方。
+      // 它必然会过期——所以要的不是让它永远准，而是让它不会「悄悄」过期：
+      // resume.fingerprint.json 记下源数据指纹，源一变，校验就喊人重建。
+      '<a class="btn btn--ghost resume-download" href="resume.pdf" download>' +
+      icon('external', 'sm') + '<span>下载 PDF</span></a>' +
+      '</div>' +
       '</header>' +
       '<section class="resume-block"><h2 class="resume-block-title">简介</h2>' +
       '<p class="resume-bio">' + escapeHTML(profile.bio) + '</p>' +

@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import http.server
 import json
 import pathlib
@@ -348,10 +349,54 @@ def check_profile_consistency(idx: str, js: str) -> None:
     except Exception as e:  # noqa: BLE001
         check("简历覆盖全部作品（projects.json 8 件）", False, repr(e))
 
+    check_pdf_freshness()
+
     amb = pf.get("campusAmbassador") or {}
     if not any(amb.get(k) for k in ("role", "events", "reach")):
         warn("校园大使经历尚未填入（简历上该区块暂不渲染）",
              "这是唯一需要你给数字的部分，不填就不会出现在简历里，也不会留空洞条目")
+
+
+def check_pdf_freshness() -> None:
+    """静态 PDF 必然会过期，要防的是「悄悄过期」。
+
+    resume.fingerprint.json 记着生成那一刻 profile.json / projects.json 的 sha256；
+    源数据一改，这里就喊人重建——而不是让洪兄把一份旧简历投出去才发现。
+    """
+    print("== 简历 PDF 新鲜度 ==")
+    pdf = SITE / "resume.pdf"
+    meta_path = SITE / "resume.fingerprint.json"
+    if not pdf.exists() or not meta_path.exists():
+        check("存在可下载的简历 PDF", False,
+              "缺 resume.pdf 或 resume.fingerprint.json，跑 verify/make_resume_pdf.py 生成")
+        return
+    check("存在可下载的简历 PDF", True)
+    # PDF 里必须能抽出姓名，否则多半是白页／渲染失败
+    head = pdf.read_bytes()[:4]
+    check("PDF 文件头合法（%PDF-）", head == b"%PDF", f"实得 {head!r}")
+    check("PDF 体积合理（>5KB，非白页）", pdf.stat().st_size > 5000,
+          f"{pdf.stat().st_size} 字节")
+
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        check("resume.fingerprint.json 可解析", False, repr(e))
+        return
+
+    stale: list[str] = []
+    for name, recorded in (meta.get("generated_from") or {}).items():
+        f = SITE / name
+        if not f.exists():
+            stale.append(f"{name} 已不存在")
+            continue
+        actual = hashlib.sha256(f.read_bytes()).hexdigest()[:16]
+        if actual != recorded:
+            stale.append(f"{name} 已变更（{recorded} -> {actual}）")
+    check("简历 PDF 未过期（源数据指纹一致）", not stale,
+          f"{len(stale)} 项过期：{'; '.join(stale)}｜重建：python verify/make_resume_pdf.py"
+          if stale else "")
+    if (SITE / "app.js").exists() and "resume.pdf" not in (SITE / "app.js").read_text(encoding="utf-8"):
+        check("简历页有下载 PDF 入口", False, "app.js 里找不到 resume.pdf 链接")
 
 
 # ---------- 静态服务 + 资产探测 ----------

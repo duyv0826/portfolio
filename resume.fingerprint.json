@@ -1,0 +1,8 @@
+{
+  "generated_from": {
+    "profile.json": "e1f3e53f578b79e0",
+    "projects.json": "47be3571d451b1c5"
+  },
+  "generated_at": "2026-09-21T05:12:35+08:00",
+  "note": "源数据（profile.json / projects.json）任一变动后，此 PDF 即过期；跑 python verify/make_resume_pdf.py 重新生成。"
+}

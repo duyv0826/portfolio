@@ -383,7 +383,7 @@ img[data-broken="true"]{display:none;}
 .resume-contact a:hover{color:var(--accent);}
 .resume-sep{color:var(--fg-3);}
 
-.resume-print{flex:none;}
+.resume-actions{display:flex;flex-wrap:wrap;gap:var(--space-3);flex:none;}
 
 .resume-block{padding-block:var(--space-6);border-bottom:var(--hairline) solid var(--border);}
 .resume-block-title{
@@ -466,7 +466,7 @@ img[data-broken="true"]{display:none;}
 
   /* 屏幕专属部件全部退出纸张 */
   .skip-link,.site-header,.site-footer,.lightbox,.noscript-note,
-  .resume-print,.resume-foot{display:none !important;}
+  .resume-actions,.resume-foot{display:none !important;}
 
   .container{max-width:none;padding:0;margin:0;}
   a{color:#000;text-decoration:none;}

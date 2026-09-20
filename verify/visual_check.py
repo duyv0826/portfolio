@@ -264,8 +264,15 @@ def main() -> int:
             contact_txt = page.locator("#resume-view .resume-contact").inner_text()
             check("简历带联系邮箱", "2260030089@student.must.edu.mo" in contact_txt,
                   f"实得 {contact_txt!r}")
-            check("简历带设打印按钮", page.locator("#resume-view .resume-print").count() == 1,
+            check("简历带打印按钮", page.locator("#resume-view .resume-print").count() == 1,
                   "找不到打印按钮")
+            dl = page.locator("#resume-view .resume-download")
+            check("简历带下载 PDF 入口", dl.count() == 1, "找不到下载入口")
+            if dl.count():
+                check("下载入口指向真实存在的 resume.pdf",
+                      dl.first.get_attribute("href") == "resume.pdf"
+                      and (SITE / "resume.pdf").exists(),
+                      f"href={dl.first.get_attribute('href')!r}")
             check("简历未渲染空的校园大使区块（字段为空则整块不出现）",
                   page.locator("#resume-view .resume-amb").count() == 0,
                   "出现了无内容的条目")
@@ -274,10 +281,12 @@ def main() -> int:
             # 打印态：屏幕上深色的东西必须全部退出纸张
             page.emulate_media(media="print")
             page.wait_for_timeout(400)
+            # 用 checkVisibility() 而不是 getComputedStyle().display：
+            # 后者只看元素自身的计算值，父级被 display:none 时子元素仍返回原值，
+            # 会把「按钮包在一个已隐藏的容器里」误判成「按钮还在」
             pr = page.evaluate("""() => {
               const vis = s => { const e = document.querySelector(s);
-                if (!e) return false; const cs = getComputedStyle(e);
-                return cs.display !== 'none' && cs.visibility !== 'hidden'; };
+                return !!(e && e.checkVisibility({ visibilityProperty: true })); };
               return {
                 header: vis('.site-header'),
                 footer: vis('.site-footer'),
