@@ -57,6 +57,35 @@ def main() -> int:
         rep(pg.locator("#notfound-view").is_visible(), "不存在的 id 正确落 404")
         pg.close()
 
+        # ---------- 简历（冷启动直接点开 #resume） ----------
+        print("== 简历 ==")
+        pg = browser.new_page(viewport={"width": 1440, "height": 900})
+        errs = []
+        pg.on("pageerror", lambda e: errs.append(str(e)))
+        pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
+        pg.goto(f"{BASE}/index.html#resume", wait_until="load")
+        pg.wait_for_timeout(2200)
+        nm = pg.locator("#resume-name").inner_text() if pg.locator("#resume-name").count() else "(无)"
+        rep(nm == "洪昺森", "冷启动直接开 #resume 命中简历", f"标题={nm!r}")
+        rep(pg.locator("#resume-view .resume-work").count() == 8,
+            "简历列出 8 件作品", f"实得 {pg.locator('#resume-view .resume-work').count()}")
+        rep(pg.locator("#resume-view .resume-print").count() == 1, "打印按钮存在")
+        rep(not errs, "简历控制台清洁", str(errs[:2]))
+
+        pg.emulate_media(media="print")
+        pg.wait_for_timeout(400)
+        pr = pg.evaluate("""() => {
+          const disp = s => { const e = document.querySelector(s);
+            return e ? getComputedStyle(e).display : 'missing'; };
+          return { header: disp('.site-header'), footer: disp('.site-footer'),
+                   bg: getComputedStyle(document.body).backgroundColor };
+        }""")
+        rep(pr["header"] == "none" and pr["footer"] == "none" and pr["bg"] == "rgb(255, 255, 255)",
+            "线上打印态正确（外壳消失 + 底色翻白）", str(pr))
+        pg.emulate_media(media="screen")
+        pg.screenshot(path="online_resume.png", full_page=False)
+        pg.close()
+
         # ---------- 首页 ----------
         print("== 首页 ==")
         pg = browser.new_page(viewport={"width": 1440, "height": 900})
