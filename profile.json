@@ -1,0 +1,44 @@
+{
+  "name": "洪昺森",
+  "alias": "渡雨",
+  "aliasNote": "小黑盒：都督渡雨0v0 · 知乎：渡雨丷",
+  "headline": "互动媒体艺术 · 游戏设计",
+  "lede": "澳门科技大学研究生，专注可玩叙事与互动影像。",
+  "bio": "我关注「人如何与数字系统互动」——从独立游戏的原型设计，到结合传感器与投影的互动装置。研究生阶段围绕可玩叙事展开，探索让玩家选择真正改变故事走向与情绪体验的设计方法。",
+  "skills": [
+    "Unity · C#",
+    "原型设计",
+    "交互叙事",
+    "基础 3D / Shader",
+    "用户研究与可用性测试"
+  ],
+  "contentNote": "持续在小黑盒与知乎输出游戏设计相关的方法论与行业观察。",
+  "education": [
+    {
+      "school": "澳门科技大学",
+      "program": "互动媒体艺术硕士 · 游戏设计",
+      "period": "在读",
+      "note": "学位作品《澳里·光景》结合个人创作岗位撰写学位论文"
+    },
+    {
+      "school": "澳门科技大学",
+      "program": "本科",
+      "period": "已毕业",
+      "note": ""
+    }
+  ],
+  "contact": {
+    "email": "2260030089@student.must.edu.mo",
+    "github": "https://github.com/duyv0826",
+    "xiaoheihe": "https://xiaoheihe.cn/app/user/profile/81382527",
+    "zhihu": "https://www.zhihu.com/people/76-11-10-24"
+  },
+  "campusAmbassador": {
+    "role": "",
+    "period": "",
+    "events": "",
+    "reach": "",
+    "conversion": "",
+    "deliverables": ""
+  }
+}

@@ -40,11 +40,13 @@
   /* ---------------- 状态 ---------------- */
   var projects = [];
   var gallery = [];
+  var profile = null;
   // 数据是否已到位。冷启动时 boot() 里的 router() 是同步跑的，
   // 此刻 projects 还是空数组，任何 #work/<id> 都会被误判成 404。
   // 用这个开关让路由在「数据未到位」时暂不判详情页的生死。
   var dataReady = false;
-  var listView, detailView, notFoundView, worksGrid, heroPreview, galleryGrid;
+  var profileReady = false;
+  var listView, detailView, notFoundView, resumeView, worksGrid, heroPreview, galleryGrid;
 
   /* ---------------- 图标辅助 ---------------- */
   function icon(name, size) {
@@ -274,6 +276,7 @@
 
     listView.hidden = true;
     notFoundView.hidden = true;
+    if (resumeView) resumeView.hidden = true;
     detailView.hidden = false;
     window.scrollTo(0, 0);
   }
@@ -282,7 +285,137 @@
   function renderNotFound() {
     detailView.hidden = true;
     listView.hidden = true;
+    if (resumeView) resumeView.hidden = true;
     notFoundView.hidden = false;
+  }
+
+  /* ---------------- 渲染：About（用 profile.json 覆盖静态兜底） ---------------- */
+  // index.html 里已有一份静态 About，那是无 JS 与爬虫的兜底。
+  // 这里用同一份数据源重渲染，保证 profile.json 才是最终口径；
+  // 两份若对不上，由 verify_site.py 的一致性门禁拦截。
+  function renderAbout() {
+    if (!profile) return;
+    var bio = document.getElementById('about-bio');
+    if (bio) {
+      var skills = Array.isArray(profile.skills) ? profile.skills.join(' · ') : '';
+      bio.innerHTML =
+        '<p class="about-lead">' + escapeHTML(profile.bio) + '</p>' +
+        '<p>技能：' + escapeHTML(skills) +
+        (profile.contentNote ? escapeHTML(profile.contentNote) : '') + '</p>';
+    }
+    var meta = document.getElementById('about-meta-list');
+    if (meta) {
+      var edu0 = (Array.isArray(profile.education) && profile.education[0]) || {};
+      var html = '';
+      if (edu0.school) html += '<div class="meta-row"><dt>院校</dt><dd>' + escapeHTML(edu0.school) + '</dd></div>';
+      if (profile.headline) html += '<div class="meta-row"><dt>方向</dt><dd>' + escapeHTML(profile.headline) + '</dd></div>';
+      if (profile.alias) {
+        html += '<div class="meta-row"><dt>网名</dt><dd>' + escapeHTML(profile.alias) +
+          (profile.aliasNote ? '（' + escapeHTML(profile.aliasNote) + '）' : '') + '</dd></div>';
+      }
+      meta.innerHTML = html;
+    }
+  }
+
+  /* ---------------- 渲染：简历（#resume 视图，浏览器打印即 PDF） ---------------- */
+  // 数据与作品集同源：profile.json（人）+ projects.json（作品）。
+  // 不手写第二份简历，就不会出现「PDF 是上个月的版本」。
+  function renderResume() {
+    if (!resumeView) return;
+    if (!profileReady) {
+      resumeView.innerHTML = '<div class="container"><p class="state-msg">简历加载中…</p></div>';
+      return;
+    }
+    if (!profile) {
+      resumeView.innerHTML = '<div class="container"><p class="state-msg">简历数据加载失败，请稍后重试。</p></div>';
+      return;
+    }
+
+    var c = profile.contact || {};
+    var contactBits = [];
+    if (c.email) contactBits.push('<a href="mailto:' + escapeAttr(c.email) + '">' + escapeHTML(c.email) + '</a>');
+    if (c.github) contactBits.push('<a href="' + escapeAttr(safeUrl(c.github)) + '" target="_blank" rel="noopener noreferrer">GitHub</a>');
+    if (c.xiaoheihe) contactBits.push('<a href="' + escapeAttr(safeUrl(c.xiaoheihe)) + '" target="_blank" rel="noopener noreferrer">小黑盒</a>');
+    if (c.zhihu) contactBits.push('<a href="' + escapeAttr(safeUrl(c.zhihu)) + '" target="_blank" rel="noopener noreferrer">知乎</a>');
+
+    // 教育
+    var eduHtml = '';
+    var edu = Array.isArray(profile.education) ? profile.education : [];
+    if (edu.length) {
+      eduHtml = '<section class="resume-block"><h2 class="resume-block-title">教育</h2><ul class="resume-edu" role="list">' +
+        edu.map(function (e) {
+          // 顺序不能乱：school + period 要在同一行（1fr auto），
+          // 跨行的 program 若排在前头，会把 period 挤到下一行去
+          return '<li class="resume-edu-item"><span class="resume-edu-school">' + escapeHTML(e.school) + '</span>' +
+            '<span class="resume-edu-period">' + escapeHTML(e.period || '') + '</span>' +
+            '<span class="resume-edu-program">' + escapeHTML(e.program) + '</span>' +
+            (e.note ? '<span class="resume-edu-note">' + escapeHTML(e.note) + '</span>' : '') +
+            '</li>';
+        }).join('') + '</ul></section>';
+    }
+
+    // 技能
+    var skillsHtml = '';
+    if (Array.isArray(profile.skills) && profile.skills.length) {
+      skillsHtml = '<section class="resume-block"><h2 class="resume-block-title">技能</h2>' +
+        '<ul class="resume-skills" role="list">' +
+        profile.skills.map(function (s) { return '<li>' + escapeHTML(s) + '</li>'; }).join('') +
+        '</ul></section>';
+    }
+
+    // 作品：年份倒序，取角色 / 媒介 / 一句话描述，全部来自 projects.json
+    var ordered = projects.slice().sort(function (a, b) {
+      return (Number(b.year) || 0) - (Number(a.year) || 0);
+    });
+    var worksHtml = '';
+    if (ordered.length) {
+      worksHtml = '<section class="resume-block"><h2 class="resume-block-title">作品</h2>' +
+        '<ol class="resume-works" role="list">' +
+        ordered.map(function (p) {
+          return '<li class="resume-work">' +
+            '<div class="resume-work-head"><h3 class="resume-work-title">' + escapeHTML(p.title) + '</h3>' +
+            (p.year ? '<span class="resume-work-year">' + escapeHTML(p.year) + '</span>' : '') + '</div>' +
+            (p.role ? '<p class="resume-work-role">' + escapeHTML(p.role) + '</p>' : '') +
+            (p.desc ? '<p class="resume-work-desc">' + escapeHTML(p.desc) + '</p>' : '') +
+            (p.medium ? '<p class="resume-work-medium">' + escapeHTML(p.medium) + '</p>' : '') +
+            '</li>';
+        }).join('') + '</ol></section>';
+    }
+
+    // 校园大使：字段为空就整块不渲染（不编数字，也不留空洞条目）
+    var amb = profile.campusAmbassador || {};
+    var ambBits = [];
+    if (amb.role) ambBits.push(escapeHTML(amb.role));
+    if (amb.period) ambBits.push(escapeHTML(amb.period));
+    if (amb.events) ambBits.push('活动 ' + escapeHTML(amb.events));
+    if (amb.reach) ambBits.push('触达 ' + escapeHTML(amb.reach));
+    if (amb.conversion) ambBits.push('转化 ' + escapeHTML(amb.conversion));
+    if (amb.deliverables) ambBits.push('产出 ' + escapeHTML(amb.deliverables));
+    var ambHtml = ambBits.length
+      ? '<section class="resume-block"><h2 class="resume-block-title">校园大使</h2>' +
+        '<p class="resume-amb">' + ambBits.join(' · ') + '</p></section>'
+      : '';
+
+    resumeView.innerHTML =
+      '<article class="resume container" aria-labelledby="resume-name">' +
+      '<header class="resume-head">' +
+      '<div class="resume-ident">' +
+      '<h1 class="resume-name" id="resume-name">' + escapeHTML(profile.name) + '</h1>' +
+      (profile.headline ? '<p class="resume-headline">' + escapeHTML(profile.headline) + '</p>' : '') +
+      (contactBits.length ? '<p class="resume-contact">' + contactBits.join('<span class="resume-sep">·</span>') + '</p>' : '') +
+      '</div>' +
+      '<button class="btn btn--ghost resume-print" type="button">' + icon('printer', 'sm') +
+      '<span>打印 / 存为 PDF</span></button>' +
+      '</header>' +
+      '<section class="resume-block"><h2 class="resume-block-title">简介</h2>' +
+      '<p class="resume-bio">' + escapeHTML(profile.bio) + '</p>' +
+      (profile.contentNote ? '<p class="resume-bio">' + escapeHTML(profile.contentNote) + '</p>' : '') +
+      '</section>' +
+      eduHtml + skillsHtml + worksHtml + ambHtml +
+      '<footer class="resume-foot">' +
+      '<p>本页由 profile.json 与 projects.json 自动生成，与作品集同源；浏览器打印即 PDF。</p>' +
+      '<p><a class="crumb" href="#/">返回作品集</a></p>' +
+      '</footer></article>';
   }
 
   /* ---------------- 路由解析 ---------------- */
@@ -301,6 +434,8 @@
       return { view: 'detail', id: id };
     }
     if (h === '' || h === '#' || h === '#/') return { view: 'list', section: '' };
+    // 简历是独立视图（不是滚到某个锚点），所以要在 known 列表之前判
+    if (h === '#resume') return { view: 'resume' };
     var known = ['#about', '#works', '#gallery', '#contact'];
     if (known.indexOf(h) >= 0) return { view: 'list', section: h.slice(1) };
     return { view: 'notfound' };
@@ -316,20 +451,35 @@
       return;
     }
     if (r.view === 'notfound') { renderNotFound(); return; }
+    if (r.view === 'resume') {
+      renderResume();
+      detailView.hidden = true;
+      notFoundView.hidden = true;
+      listView.hidden = true;
+      if (resumeView) resumeView.hidden = false;
+      setCurrentNav('#resume');
+      window.scrollTo(0, 0);
+      return;
+    }
     // 列表视图
     detailView.hidden = true;
     notFoundView.hidden = true;
     listView.hidden = false;
+    if (resumeView) resumeView.hidden = true;
     if (r.section) {
       var el = document.getElementById(r.section);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       window.scrollTo(0, 0);
     }
-    // 当前导航高亮
+    setCurrentNav(r.section ? '#' + r.section : '');
+  }
+
+  // 当前导航高亮。简历是独立视图但同样有导航项，所以抽出来共用
+  function setCurrentNav(href) {
     var links = document.querySelectorAll('.nav-link');
     for (var i = 0; i < links.length; i++) {
-      if (r.section && links[i].getAttribute('href') === '#' + r.section) {
+      if (href && links[i].getAttribute('href') === href) {
         links[i].setAttribute('aria-current', 'page');
       } else {
         links[i].removeAttribute('aria-current');
@@ -350,6 +500,10 @@
         // 那时它对 #work/<id> 只能选择「什么都不做」。现在补判，深链才算真正落地。
         // router() 幂等，列表视图下只是重设导航高亮 + 滚动定位，无副作用。
         router();
+        // 简历要用 projects，所以这里补渲一次。
+        // 屏上 resume-view 仍带 hidden，此举只为「用户在任何页面按 Ctrl+P」
+        // 都有内容可打——否则会打出一张白纸。
+        renderResume();
       })
       .catch(function (err) {
         projects = [];
@@ -358,6 +512,26 @@
         dataReady = true;
         if (worksGrid) worksGrid.innerHTML = '<li class="state-msg">作品加载失败，请稍后重试。(' + escapeHTML(err.message) + ')</li>';
         if (heroPreview) heroPreview.innerHTML = '';
+        router();
+        renderResume();
+      });
+  }
+  function loadProfile() {
+    fetch('profile.json')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (p) {
+        profile = p || null;
+        profileReady = true;
+        renderAbout();
+        // 与 projects 同一个道理：站外直接点开 #resume 时，boot() 里的 router()
+        // 跑在 fetch 之前，profile 还是 null。数据到位后必须补判一次。
+        router();
+        renderResume();
+      })
+      .catch(function () {
+        profile = null;
+        profileReady = true;  // 置位，否则简历会永远停在「加载中」
+        renderAbout();
         router();
       });
   }
@@ -447,6 +621,15 @@
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
     }
 
+    // 打印按钮走事件委托：简历内容是 innerHTML 动态生成的，
+    // 每次重渲染都会换掉按钮节点，直接 addEventListener 会失效
+    if (resumeView) {
+      resumeView.addEventListener('click', function (e) {
+        if (e.target.closest('.resume-print')) window.print();
+        if (e.target.closest('.resume-foot .crumb')) { /* 交给 hash 跳转，无需处理 */ }
+      });
+    }
+
     var toTop = document.querySelector('.to-top');
     if (toTop) toTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
@@ -464,11 +647,13 @@
     listView = document.getElementById('list-view');
     detailView = document.getElementById('detail-view');
     notFoundView = document.getElementById('notfound-view');
+    resumeView = document.getElementById('resume-view');
     worksGrid = document.getElementById('works-grid');
     heroPreview = document.getElementById('hero-preview');
     galleryGrid = document.getElementById('gallery-grid');
     initInteractions();
     loadProjects();
+    loadProfile();
     loadGallery();
     window.addEventListener('hashchange', router);
     router();

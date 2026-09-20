@@ -230,8 +230,10 @@ def main() -> int:
             # 顺带：深链进来后点「返回作品」要能回到列表
             # 先判存在再点：详情页没渲染出来时这里不该抛超时把整个套件带崩，
             # 让它退化成一条普通 FAIL，后面的用例还能继续跑完
-            if cold.locator(".crumb").count():
-                cold.locator(".crumb").click()
+            # 作用域必须限定在 #detail-view：简历会被预渲染进 DOM（屏上 hidden，
+            # 专为「任何页面按 Ctrl+P」服务），它里面也有一个 .crumb，不收紧就撞车
+            if cold.locator("#detail-view .crumb").count():
+                cold.locator("#detail-view .crumb").click()
                 cold.wait_for_timeout(600)
                 check("从深链返回列表视图",
                       cold.locator("#list-view").is_visible()
@@ -240,6 +242,97 @@ def main() -> int:
             else:
                 check("从深链返回列表视图", False, "详情页未渲染，找不到返回入口")
             cold.close()
+
+            # ---------- 简历视图 ----------
+            print("== 简历视图 ==")
+            page.goto(base + "/index.html#resume", wait_until="load")
+            page.wait_for_timeout(1400)
+            check("#resume 进入简历视图且列表让位",
+                  page.locator("#resume-view").is_visible()
+                  and not page.locator("#list-view").is_visible(),
+                  "简历视图未接管")
+            name = page.locator("#resume-name").inner_text()
+            check("简历标题取自 profile.json", name == "洪昺森", f"实得 {name!r}")
+            works_n = page.locator("#resume-view .resume-work").count()
+            check("简历列出全部 8 件作品", works_n == 8, f"实得 {works_n}")
+
+            # 年份必须倒序： freshest first，跟作品集的叙事顺序不同
+            years = page.locator("#resume-view .resume-work-year").evaluate_all(
+                "els => els.map(e => Number(e.textContent.trim()))")
+            check("作品按年份倒序排列", years == sorted(years, reverse=True), f"实得 {years}")
+
+            contact_txt = page.locator("#resume-view .resume-contact").inner_text()
+            check("简历带联系邮箱", "2260030089@student.must.edu.mo" in contact_txt,
+                  f"实得 {contact_txt!r}")
+            check("简历带设打印按钮", page.locator("#resume-view .resume-print").count() == 1,
+                  "找不到打印按钮")
+            check("简历未渲染空的校园大使区块（字段为空则整块不出现）",
+                  page.locator("#resume-view .resume-amb").count() == 0,
+                  "出现了无内容的条目")
+            page.screenshot(path=str(SHOTS / "resume.png"), full_page=True)
+
+            # 打印态：屏幕上深色的东西必须全部退出纸张
+            page.emulate_media(media="print")
+            page.wait_for_timeout(400)
+            pr = page.evaluate("""() => {
+              const vis = s => { const e = document.querySelector(s);
+                if (!e) return false; const cs = getComputedStyle(e);
+                return cs.display !== 'none' && cs.visibility !== 'hidden'; };
+              return {
+                header: vis('.site-header'),
+                footer: vis('.site-footer'),
+                printBtn: vis('.resume-print'),
+                listView: vis('#list-view'),
+                resume: vis('#resume-view'),
+                bodyBg: getComputedStyle(document.body).backgroundColor,
+              };
+            }""")
+            check("打印时 Header 已隐藏", not pr["header"], f"{pr}")
+            check("打印时页脚已隐藏", not pr["footer"], f"{pr}")
+            check("打印时打印按钮自身也隐藏", not pr["printBtn"], f"{pr}")
+            check("打印时首页列表不参与排版", not pr["listView"], f"{pr}")
+            check("打印时简历可见", pr["resume"], f"{pr}")
+            check("打印时「首页视图」不参与排版（hidden 本身就不排）",
+                  not pr["listView"], f"{pr}")
+            check("打印底色翻白（深色.Token 已在 @media print 重定义）",
+                  pr["bodyBg"] == "rgb(255, 255, 255)", f"实得 {pr['bodyBg']}")
+
+            # 打印必须「打你正在看的那一页」：在作品详情页按 Ctrl+P 不该拿到简历
+            page.goto(base + "/index.html#work/room-of-choice", wait_until="load")
+            page.wait_for_timeout(1200)
+            page.emulate_media(media="print")
+            page.wait_for_timeout(400)
+            ctx = page.evaluate("""() => {
+              const vis = s => { const e = document.querySelector(s);
+                if (!e) return false; return getComputedStyle(e).display !== 'none'; };
+              return { detail: vis('#detail-view'), resume: vis('#resume-view'),
+                       title: (document.querySelector('#detail-title')||{}).textContent || '' };
+            }""")
+            check("在详情页打印，输出的是详情页而非简历",
+                  ctx["detail"] and not ctx["resume"] and "抉择" in ctx["title"], f"{ctx}")
+            page.emulate_media(media="screen")
+
+            # 回到简历视图再导一次 PDF 作为交付物
+            page.goto(base + "/index.html#resume", wait_until="load")
+            page.wait_for_timeout(1200)
+            page.emulate_media(media="print")
+            page.wait_for_timeout(400)
+            pdf = SHOTS / "resume-print.pdf"
+            page.pdf(path=str(pdf), format="A4", print_background=False)
+            check("可导出 PDF 且非空", pdf.exists() and pdf.stat().st_size > 5000,
+                  f"大小 {pdf.stat().st_size if pdf.exists() else 0} 字节")
+            page.emulate_media(media="screen")
+            page.goto(base + "/index.html#resume", wait_until="load")
+            page.wait_for_timeout(900)
+
+            # 从简历点「返回作品集」要能回列表
+            if page.locator("#resume-view .resume-foot .crumb").count():
+                page.locator("#resume-view .resume-foot .crumb").click()
+                page.wait_for_timeout(600)
+                check("从简历返回作品集",
+                      page.locator("#list-view").is_visible()
+                      and not page.locator("#resume-view").is_visible(),
+                      "点返回没回到列表")
 
             # ---------- 站内 404 ----------
             page.goto(base + "/index.html#nope", wait_until="load")

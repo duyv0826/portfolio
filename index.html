@@ -48,18 +48,16 @@
   <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
   <symbol id="icon-external" viewBox="0 0 24 24"><path d="M15 4h5v5M20 4L10 14M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></symbol>
-  <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></symbol>
   <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M3 6h18v12H3Z"/><path d="M3 7l9 6 9-6"/></symbol>
   <symbol id="icon-gamepad" viewBox="0 0 24 24"><path d="M7 9h10a4 4 0 0 1 4 4 4 4 0 0 1-4 4H7a4 4 0 0 1-4-4 4 4 0 0 1 4-4Z"/><path d="M9 11v4M7 13h4"/><circle cx="15.5" cy="12" r="0.8"/><circle cx="17.5" cy="14" r="0.8"/></symbol>
-  <symbol id="icon-image" viewBox="0 0 24 24"><path d="M4 5h16v14H4Z"/><path d="M4 16l5-5 4 4 3-3 4 4"/><circle cx="9" cy="9" r="1.5"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M3 12l8.5-8.5a2 2 0 0 1 2.83 0l6.17 6.17a2 2 0 0 1 0 2.83L13 20a2 2 0 0 1-2.83 0L3 12Z"/><circle cx="8.5" cy="8.5" r="1.2"/></symbol>
   <symbol id="icon-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7Z"/></symbol>
-  <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
   <symbol id="icon-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
   <symbol id="icon-github" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.48A10.02 10.02 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></symbol>
   <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+  <symbol id="icon-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M6 15h12v6H6Z"/></symbol>
 </svg>
 
 <!-- ===== 全局 Header ===== -->
@@ -69,6 +67,7 @@
     <nav class="nav" aria-label="主导航">
       <a class="nav-link" href="#works">作品</a>
       <a class="nav-link" href="#gallery">图库</a>
+      <a class="nav-link" href="#resume">简历</a>
       <a class="nav-link" href="#contact">联系</a>
     </nav>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="打开导航">
@@ -78,6 +77,7 @@
   <nav id="mobile-nav" class="mobile-nav" hidden aria-label="移动端导航">
     <a class="mobile-link" href="#works">作品</a>
     <a class="mobile-link" href="#gallery">图库</a>
+    <a class="mobile-link" href="#resume">简历</a>
     <a class="mobile-link" href="#contact">联系</a>
   </nav>
 </header>
@@ -103,12 +103,14 @@
     <section class="about container" id="about" aria-labelledby="about-title">
       <h2 class="section-title" id="about-title"><span class="section-index">01</span>关于</h2>
       <div class="about-grid">
-        <div class="about-bio">
+        <!-- 静态 HTML 是无 JS / 爬虫的兜底；JS 加载 profile.json 后会用同一份数据覆盖，
+             真正的「不漂移」由 verify_site.py 的一致性门禁保证（两份对不上就红） -->
+        <div class="about-bio" id="about-bio">
           <p class="about-lead">我关注「人如何与数字系统互动」——从独立游戏的原型设计，到结合传感器与投影的互动装置。研究生阶段围绕可玩叙事展开，探索让玩家选择真正改变故事走向与情绪体验的设计方法。</p>
           <p>技能：Unity · C# · 原型设计 · 交互叙事 · 基础 3D / Shader · 用户研究与可用性测试。持续在小黑盒与知乎输出游戏设计相关的方法论与行业观察。</p>
         </div>
         <aside class="about-meta">
-          <dl class="meta-list">
+          <dl class="meta-list" id="about-meta-list">
             <div class="meta-row"><dt>院校</dt><dd>澳门科技大学</dd></div>
             <div class="meta-row"><dt>方向</dt><dd>互动媒体艺术 · 游戏设计</dd></div>
             <div class="meta-row"><dt>网名</dt><dd>渡雨（小黑盒：都督渡雨0v0 · 知乎：渡雨丷）</dd></div>
@@ -148,6 +150,9 @@
 
   <!-- ===== 作品详情视图（JS 填充） ===== -->
   <div id="detail-view" hidden></div>
+
+  <!-- ===== 简历视图（JS 由 profile.json + projects.json 生成；浏览器打印即 PDF） ===== -->
+  <div id="resume-view" hidden></div>
 
   <!-- ===== 404 / 未知 hash 回退 ===== -->
   <section id="notfound-view" class="notfound container" hidden>

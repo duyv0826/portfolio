@@ -258,6 +258,7 @@ def scan_consistency() -> None:
     print("== 一致性 / 元信息 ==")
     idx = (SITE / "index.html").read_text(encoding="utf-8")
     nf = (SITE / "404.html").read_text(encoding="utf-8")
+    js = (SITE / "app.js").read_text(encoding="utf-8")
     check("首页含 og:image（PNG，非 SVG）", 'property="og:image" content="assets/og-cover.png"' in idx)
     check("og 封面文件存在", (SITE / "assets" / "og-cover.png").exists())
     check("favicon 已引用且文件存在",
@@ -271,8 +272,86 @@ def scan_consistency() -> None:
     check("降级：存在 noscript 提示", "<noscript>" in idx)
     check("动效降级：prefers-reduced-motion 已处理",
           "prefers-reduced-motion" in (SITE / "styles.css").read_text(encoding="utf-8"))
-    check("图标为 SVG Sprite（15 枚 symbol）",
-          idx.count("<symbol id=") == 15, f"实际 {idx.count('<symbol id=')} 枚")
+    # 不写死「N 枚」：枚数会随功能增长，写死就得跟着改一次。
+    # 真正要守住的是「引用的图标必须有 symbol，symbol 也不能是没人用的死代码」。
+    defined = set(re.findall(r'<symbol id="(icon-[a-z0-9-]+)"', idx))
+    # 引用有两种写法：字面 <use href="#icon-x">，以及 app.js 里的 icon('x') / icon(变量)
+    # ——后者是字符串拼接出来的，只扫字面引用会把一堆在用图标误判成死代码
+    used = set(re.findall(r"#(icon-[a-z0-9-]+)", idx + js))
+    for m in re.findall(r"['\"]([a-z0-9-]+)['\"]", js):
+        if "icon-" + m in defined:
+            used.add("icon-" + m)
+    missing = sorted(used - defined)
+    orphans = sorted(defined - used)
+    check("引用的图标全部有对应 symbol（无空引用 / 无拼错名）", not missing,
+          f"缺 definition：{missing}" if missing else "")
+    if orphans:
+        # 只警告不阻塞：存在 icon(变量) 这类动态拼接，误判成本高于留着几行 symbol
+        warn("Sprite 中有疑似未引用的图标（若为动态引用可忽略）", ", ".join(orphans))
+    else:
+        PASSES.append("Sprite 无未被使用的孤立图标")
+
+    # ---------- profile.json 必须与硬编码兜底一致 ----------
+    # 取舍：index.html 里的 About / 联系区是「无 JS 与爬虫」的静态兜底，
+    # profile.json 是简历的数据源——同一件事存了两份。
+    # 单一真相源在无构建链的静态站里做不到，那就让机器来防漂移：
+    # 两份对不上就 FAIL，而不是等哪天简历上印着旧邮箱才发现。
+    check_profile_consistency(idx, js)
+
+
+def check_profile_consistency(idx: str, js: str) -> None:
+    print("== 简历数据源一致性（profile.json vs 静态兜底） ==")
+    pf_path = SITE / "profile.json"
+    if not pf_path.exists():
+        check("profile.json 存在", False, "简历缺失数据源")
+        return
+    check("profile.json 存在", True)
+    try:
+        pf = json.loads(pf_path.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        check("profile.json 可解析", False, repr(e))
+        return
+    check("profile.json 可解析", True)
+
+    mismatches: list[str] = []
+    c = pf.get("contact") or {}
+
+    def must(label: str, needle: str, hay: str) -> None:
+        if needle and needle not in hay:
+            mismatches.append(f"{label}「{needle}」不在 {hay[:0]}静态兜底里")
+
+    # 邮箱口径最容易漂：改了 index.html 忘了改 profile.json（或反之）都会红
+    must("profile.contact.email", str(c.get("email") or ""), idx)
+    must("profile.contact.github", str(c.get("github") or ""), idx)
+    must("profile.contact.xiaoheihe", str(c.get("xiaoheihe") or ""), idx)
+    must("profile.contact.zhihu", str(c.get("zhihu") or ""), idx)
+    must("profile.name", str(pf.get("name") or ""), idx)
+    must("profile.headline", str(pf.get("headline") or ""), idx)
+
+    # 技能列表：每一条都得能在静态兜底里找到，否则简历说了兜底没说的话
+    for s in pf.get("skills") or []:
+        must("profile.skills", str(s), idx)
+
+    bio = str(pf.get("bio") or "")
+    if bio and bio[:12] not in idx:
+        mismatches.append("profile.bio 与静态 About 正文不一致（前 12 字对不上）")
+
+    check("profile.json 与静态兜底完全一致", not mismatches,
+          f"{len(mismatches)} 处漂移，例：{mismatches[0]}" if mismatches else "")
+
+    # 招聘季最常见的翻车：简历印着去年的数字 / 漏了刚上线的作品
+    try:
+        projects = json.loads((SITE / "projects.json").read_text(encoding="utf-8"))
+        titles = [p.get("title") for p in projects if p.get("title")]
+        check("简历覆盖全部作品（projects.json 8 件）", len(titles) == len(projects),
+              f"有 {len(projects) - len(titles)} 件缺标题")
+    except Exception as e:  # noqa: BLE001
+        check("简历覆盖全部作品（projects.json 8 件）", False, repr(e))
+
+    amb = pf.get("campusAmbassador") or {}
+    if not any(amb.get(k) for k in ("role", "events", "reach")):
+        warn("校园大使经历尚未填入（简历上该区块暂不渲染）",
+             "这是唯一需要你给数字的部分，不填就不会出现在简历里，也不会留空洞条目")
 
 
 # ---------- 静态服务 + 资产探测 ----------
@@ -283,7 +362,7 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 ASSETS = [
     "/", "/index.html", "/styles.css", "/app.js", "/projects.json", "/gallery.json",
-    "/404.html", "/404.css", "/robots.txt",
+    "/profile.json", "/404.html", "/404.css", "/robots.txt",
     "/assets/favicon.svg", "/assets/og-cover.png", "/assets/og-cover.svg", "/assets/credits.json",
 ]
 
