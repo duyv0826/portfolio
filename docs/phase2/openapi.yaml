@@ -1,0 +1,1225 @@
+openapi: 3.0.3
+info:
+  title: 洪兄作品集全站 API
+  version: 1.0.0
+  description: |
+    Phase 2 API 契约（OpenAPI 3.0.3）。本文件是前端生成 TypeScript 类型、后端实现接口的**唯一权威契约**。
+
+    统一响应信封：所有接口均返回 `{ "code": 0, "data": {}, "message": "" }`。
+    - `code = 0` 表示业务成功；非 0 为错误码，取值见根级 `x-error-codes`。
+    - `data` 成功时承载具体数据，失败时（code != 0）可携带字段级错误对象。
+    - `message` 为可读说明；成功时通常为空串，错误时为中文描述。
+
+    认证方式：
+    - 公开端点（作品/博客读、订阅/留言）无需凭证。
+    - 管理员写接口与后台查看接口依赖 `access_token` httpOnly Cookie（由 `POST /api/auth/login` 签发，15min 过期）。
+    - `POST /api/auth/refresh` 使用 `refresh_token` httpOnly Cookie（7d）静默续期。
+
+    技术栈与版本锚定以 `docs/phase1/architecture.md` §1–§4 为准；数据实体以该文档 §7 与 `spec.md` §2 为准。
+  contact:
+    name: 高见远（首席架构师）
+x-error-codes:
+  "0":   { http: 200, meaning: 成功 }
+  "400": { http: 400, meaning: 参数校验失败（Zod 未过，data 含字段级错误） }
+  "401": { http: 401, meaning: 未认证 / 凭证错误（登录失败或访问受保护接口未带有效 Cookie） }
+  "403": { http: 403, meaning: 无权限（预留，单管理员场景少用） }
+  "404": { http: 404, meaning: 资源不存在（slug/id 不存在或已软删除） }
+  "429": { http: 429, meaning: 请求过于频繁（订阅/留言每 IP 60 秒 1 次） }
+  "500": { http: 500, meaning: 服务器内部错误（未预期异常） }
+servers:
+  - url: http://localhost:3000
+    description: >-
+      本地开发地址（Docker Compose 同构于腾讯云 Lighthouse）。生产域名待 ICP 备案后绑定，
+      详见 docs/decisions/OPEN-DECISIONS.md。
+tags:
+  - name: Auth
+    description: 管理员认证（双 httpOnly Cookie：access_token / refresh_token）
+  - name: Projects
+    description: 作品（公开读 / 管理员写）
+  - name: Posts
+    description: 博客（公开读仅返回 published / 管理员写）
+  - name: Visitor
+    description: 访客订阅与留言（含 PIPL 明示同意 consent）
+  - name: Admin
+    description: 后台查看订阅与留言列表
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      operationId: authLogin
+      summary: 管理员登录
+      description: >-
+        校验邮箱 + 密码（bcryptjs 比对）。成功则签发 access_token(15min) + refresh_token(7d)
+        双 httpOnly Cookie，并返回 user。凭证错误返回 401。
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 登录成功（响应头 Set-Cookie 写入 access_token 与 refresh_token）
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/UserPublic'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      operationId: authLogout
+      summary: 管理员登出
+      description: 清除 access_token 与 refresh_token 双 Cookie。
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: 登出成功（响应头清除双 Cookie）
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        nullable: true
+                        example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      operationId: authRefresh
+      summary: 静默续期 access_token
+      description: >-
+        使用 refresh_token Cookie 静默续期 access_token。refresh 失效或缺失返回 401。
+      security:
+        - cookieRefresh: []
+      responses:
+        '200':
+          description: 续期成功（响应头 Set-Cookie 写入新 access_token）
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          renewed:
+                            type: boolean
+                            example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/projects:
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: 作品列表（公开）
+      description: 返回作品列表，支持分页与分类筛选；按 created_at 倒序。
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/CategoryParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProjectListData'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/projects/{slug}:
+    get:
+      tags: [Projects]
+      operationId: getProject
+      summary: 作品详情（公开）
+      description: 按 slug 返回作品详情；含 content_md 与图集。已软删除（deleted_at 非空）视为不存在返回 404。
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProjectDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/projects:
+    post:
+      tags: [Projects]
+      operationId: createProject
+      summary: 新建作品（管理员）
+      description: 创建作品；slug 须唯一且 URL-safe。未登录返回 401。
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '201':
+          description: 已创建
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProjectDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/projects/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    put:
+      tags: [Projects]
+      operationId: updateProject
+      summary: 更新作品（管理员，部分更新）
+      description: 按 id 部分更新作品；不存在返回 404；未登录返回 401。
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdate'
+      responses:
+        '200':
+          description: 已更新
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProjectDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [Projects]
+      operationId: deleteProject
+      summary: 软删除作品（管理员）
+      description: 按 id 软删除（置 deleted_at）；列表与详情不再返回。不存在返回 404；未登录返回 401。
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: 软删除成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          deleted:
+                            type: boolean
+                            example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/posts:
+    get:
+      tags: [Posts]
+      operationId: listPosts
+      summary: 博客列表（公开，仅 published）
+      description: 仅返回 status=published 的博客；分页按 published_at 倒序。草稿不暴露。
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PostListData'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/posts/{slug}:
+    get:
+      tags: [Posts]
+      operationId: getPost
+      summary: 博客详情（公开，仅 published）
+      description: 按 slug 返回已发布博客详情；草稿或软删除返回 404。
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/SlugParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PostDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/posts:
+    post:
+      tags: [Posts]
+      operationId: createPost
+      summary: 新建博客（管理员）
+      description: 创建博客文章；status 默认 draft。未登录返回 401。
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+      responses:
+        '201':
+          description: 已创建
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PostDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/posts/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    put:
+      tags: [Posts]
+      operationId: updatePost
+      summary: 更新博客（管理员，部分更新）
+      description: 按 id 部分更新博客；可切换 status（draft/published）或设置 published_at。不存在返回 404；未登录返回 401。
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUpdate'
+      responses:
+        '200':
+          description: 已更新
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PostDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [Posts]
+      operationId: deletePost
+      summary: 软删除博客（管理员）
+      description: 按 id 软删除（置 deleted_at）。不存在返回 404；未登录返回 401。
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: 软删除成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          deleted:
+                            type: boolean
+                            example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/subscribe:
+    post:
+      tags: [Visitor]
+      operationId: subscribe
+      summary: 访客订阅
+      description: >-
+        写入 subscriptions。同邮箱使用 upsert，不新增重复行（已存在则更新 name/source 并返回已订阅）。
+        consent 必须为 true（PIPL 明示同意），否则 400。触发速率限制（同 IP 60 秒 1 次）返回 429。
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+      responses:
+        '200':
+          description: 已订阅 / 已存在不重复
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            format: email
+                          subscribed:
+                            type: boolean
+                            example: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/contact:
+    post:
+      tags: [Visitor]
+      operationId: contact
+      summary: 访客留言
+      description: >-
+        写入 comments（type=message）。consent 必须为 true（PIPL 明示同意），否则 400。
+        触发速率限制（同 IP 60 秒 1 次）返回 429。
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+      responses:
+        '200':
+          description: 已提交
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/comments:
+    get:
+      tags: [Admin]
+      operationId: listComments
+      summary: 留言列表（管理员）
+      description: 返回留言（comments）列表，支持按 type 筛选（默认 message）与分页；含 read_at 与 consent_at。未登录返回 401。
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TypeParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CommentListData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/admin/subscriptions:
+    get:
+      tags: [Admin]
+      operationId: listSubscriptions
+      summary: 订阅列表（管理员）
+      description: 返回订阅（subscriptions）列表，支持分页；含 consent_at 与 unsubscribed_at。未登录返回 401。
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SubscriptionListData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+      description: 管理员登录后由服务端写入的 httpOnly Cookie（access_token，15min 过期）；用于守卫 /admin 与 /api/admin/*。
+    cookieRefresh:
+      type: apiKey
+      in: cookie
+      name: refresh_token
+      description: 刷新令牌 httpOnly Cookie（refresh_token，7d）；仅 POST /api/auth/refresh 使用。
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: 页码，从 1 起。
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+      description: 每页条数，默认 20，上限 50（超过按 50 截断）。
+    CategoryParam:
+      name: category
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 作品分类筛选（如 "游戏美术" / "关卡设计"）。
+    TypeParam:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [message, subscribe_note]
+        default: message
+      description: 留言类型筛选，默认 message。
+    SlugParam:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+      description: URL-safe 唯一标识（作品/博客路由键）。
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: 资源 UUID 主键。
+
+  responses:
+    BadRequest:
+      description: 参数校验失败（Zod 未过）
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [400]
+                  data:
+                    type: object
+                    nullable: true
+                    description: 字段级错误对象，如 { "email": "邮箱格式非法" }
+                  message:
+                    type: string
+                    example: 邮箱格式非法
+    Unauthorized:
+      description: 未认证 / 凭证错误
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [401]
+                  message:
+                    type: string
+                    example: 凭证错误或未登录
+    Forbidden:
+      description: 无权限（预留）
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [403]
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [404]
+                  message:
+                    type: string
+                    example: 作品不存在或已删除
+    TooManyRequests:
+      description: 请求过于频繁（每 IP 60 秒 1 次）
+      headers:
+        Retry-After:
+          description: 建议重试等待秒数
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [429]
+                  message:
+                    type: string
+                    example: 提交过于频繁，请稍后再试
+    ServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Envelope'
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    enum: [500]
+                  message:
+                    type: string
+                    example: 服务器内部错误
+
+  schemas:
+    Envelope:
+      type: object
+      required: [code, data, message]
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: ""
+        data:
+          type: object
+          nullable: true
+
+    UserPublic:
+      type: object
+      required: [id, name, email]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+
+    LicenseType:
+      type: string
+      nullable: true
+      enum: [original, cc0, cc-by, commercial, client-owned, ai-assisted]
+      description: 作品授权类型（游戏设计素材版权标注刚需）。
+    ClientAuthStatus:
+      type: string
+      nullable: true
+      enum: [not-client, authorized, pending]
+      description: 客户项目授权状态。
+    PostStatus:
+      type: string
+      enum: [published, draft]
+      description: 博客状态，默认 draft。
+    CommentType:
+      type: string
+      enum: [message, subscribe_note]
+      description: 留言类型，便于分别治理。
+
+    ProjectListItem:
+      type: object
+      required: [id, slug, title, summary, cover_image_url, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        cover_image_url:
+          type: string
+          format: uri
+        gallery_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        year:
+          type: integer
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        material_source:
+          type: string
+          nullable: true
+          description: 素材来源说明。
+        license_type:
+          $ref: '#/components/schemas/LicenseType'
+        attribution:
+          type: string
+          nullable: true
+          description: 第三方素材署名。
+        client_auth_status:
+          $ref: '#/components/schemas/ClientAuthStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProjectDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProjectListItem'
+        - type: object
+          properties:
+            content_md:
+              type: string
+              description: Markdown 正文。
+
+    ProjectListData:
+      type: object
+      required: [items, page, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectListItem'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+
+    PostListItem:
+      type: object
+      required: [id, slug, title, status, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+          nullable: true
+        cover_image_url:
+          type: string
+          format: uri
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PostStatus'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PostDetail:
+      allOf:
+        - $ref: '#/components/schemas/PostListItem'
+        - type: object
+          properties:
+            content_md:
+              type: string
+              description: Markdown 正文。
+
+    PostListData:
+      type: object
+      required: [items, page, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostListItem'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+
+    SubscriptionListItem:
+      type: object
+      required: [id, email, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        consent_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: PIPL 明示同意时间留痕。
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        unsubscribed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    SubscriptionListData:
+      type: object
+      required: [items, page, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionListItem'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+
+    CommentListItem:
+      type: object
+      required: [id, name, email, message, type, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        message:
+          type: string
+        type:
+          $ref: '#/components/schemas/CommentType'
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        consent_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: PIPL 明示同意时间留痕。
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CommentListData:
+      type: object
+      required: [items, page, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentListItem'
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    ProjectCreate:
+      type: object
+      required: [slug, title, summary, cover_image_url, content_md]
+      properties:
+        slug:
+          type: string
+          description: URL-safe，唯一。
+        title:
+          type: string
+        summary:
+          type: string
+        cover_image_url:
+          type: string
+          format: uri
+        gallery_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        content_md:
+          type: string
+        year:
+          type: integer
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        material_source:
+          type: string
+          nullable: true
+        license_type:
+          $ref: '#/components/schemas/LicenseType'
+        attribution:
+          type: string
+          nullable: true
+        client_auth_status:
+          $ref: '#/components/schemas/ClientAuthStatus'
+
+    ProjectUpdate:
+      type: object
+      description: 部分更新，所有字段可选。
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        cover_image_url:
+          type: string
+          format: uri
+        gallery_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        content_md:
+          type: string
+        year:
+          type: integer
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        material_source:
+          type: string
+          nullable: true
+        license_type:
+          $ref: '#/components/schemas/LicenseType'
+        attribution:
+          type: string
+          nullable: true
+        client_auth_status:
+          $ref: '#/components/schemas/ClientAuthStatus'
+
+    PostCreate:
+      type: object
+      required: [slug, title, content_md, status]
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+          nullable: true
+        cover_image_url:
+          type: string
+          format: uri
+          nullable: true
+        content_md:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PostStatus'
+          default: draft
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 发布时间（UTC）；status=published 时建议填写。
+
+    PostUpdate:
+      type: object
+      description: 部分更新，所有字段可选。
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+          nullable: true
+        cover_image_url:
+          type: string
+          format: uri
+          nullable: true
+        content_md:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PostStatus'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    SubscribeRequest:
+      type: object
+      required: [email, consent]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+          description: 来源标记（如 "首页" / "博客"）。
+        consent:
+          type: boolean
+          enum: [true]
+          description: 必须为 true（PIPL 明示同意），否则 400。
+
+    ContactRequest:
+      type: object
+      required: [name, email, message, consent]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        message:
+          type: string
+          minLength: 1
+        consent:
+          type: boolean
+          enum: [true]
+          description: 必须为 true（PIPL 明示同意），否则 400。

@@ -1,0 +1,142 @@
+/* =========================================================
+   洪兄个人作品集全站 — Tailwind v4 @theme 片段
+   直接贴入 app/globals.css 的 @import "tailwindcss"; 之后
+   与 docs/phase1/uiux.md §3.2.1 + design-tokens.json 完全一致
+   ========================================================= */
+@theme {
+  /* ---------- Color (A1 + A2 + C) ---------- */
+  --color-bg: #FCFCFD;
+  --color-surface: #FFFFFF;
+  --color-surface-warm: #F4F4F5;
+  --color-fg: #18181B;
+  --color-fg-2: #3F3F46;
+  --color-muted: #71717A;
+  --color-meta: #A1A1AA;
+  --color-border: #E4E4E7;
+  --color-border-soft: #F4F4F5;
+  --color-accent: #2B4ACB;
+  --color-accent-hover: #213AA6;
+  --color-accent-active: #1A2F85;
+  --color-accent-on: #FFFFFF;
+  --color-success: #16A34A;
+  --color-warn: #D97706;
+  --color-danger: #DC2626;
+  --color-stage: #0B0B0C;
+  --color-stage-fg: #F4F4F5;
+
+  /* ---------- Font ---------- */
+  --font-sans: "Inter", "Noto Sans SC", sans-serif;
+  --font-display: "Bricolage Grotesque", "Noto Sans SC", sans-serif;
+  --font-body: "Inter", "Noto Sans SC", sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans SC", monospace;
+
+  /* ---------- Radius ---------- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  /* ---------- Motion ---------- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+
+  /* ---------- Font size (8 级) ---------- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  /* ---------- Leading ---------- */
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.7;
+
+  /* ---------- Tracking ---------- */
+  --tracking-caps: 0.08em;
+  --tracking-display: -0.02em;
+  --tracking-tight: -0.01em;
+
+  /* ---------- Font weight ---------- */
+  --font-weight-read: 400;
+  --font-weight-emphasize: 510;
+  --font-weight-announce: 590;
+
+  /* ---------- Elevation / Shadow ---------- */
+  --shadow-flat: none;
+  --shadow-ring: 0 0 0 1px var(--color-border);
+  --shadow-raised: 0 1px 2px color-mix(in srgb, var(--color-fg) 4%, transparent),
+                   0 4px 12px color-mix(in srgb, var(--color-fg) 6%, transparent);
+
+  /* ---------- z-index ---------- */
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-modal: 1200;
+  --z-toast: 1300;
+}
+
+/* =========================================================
+   组件层基线（@layer components，可贴入 globals.css）
+   说明：@theme 只生成工具类；以下为跨页复用的组件类。
+   ========================================================= */
+@layer components {
+  /* 按钮基（变体见 DESIGN.md §4） */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 40px;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: var(--weight-emphasize);
+    font-size: var(--text-sm);
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--ease-standard),
+                border-color var(--motion-fast) var(--ease-standard),
+                transform var(--motion-fast) var(--ease-standard);
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { background: var(--color-accent); color: var(--color-accent-on); }
+  .btn-primary:hover { background: var(--color-accent-hover); }
+  .btn-primary:active { background: var(--color-accent-active); }
+  .btn-secondary { background: transparent; border: 1px solid var(--color-border); color: var(--color-fg); }
+  .btn-secondary:hover { background: var(--color-surface-warm); }
+  .btn-ghost { background: transparent; color: var(--color-fg-2); }
+  .btn-ghost:hover { background: var(--color-surface-warm); }
+  .btn-danger { background: var(--color-danger); color: #FFFFFF; }
+
+  /* 卡片基 */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  /* 容器 */
+  .container-page {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--container-gutter);
+  }
+}
+
+/* MOTION=4：reduced-motion 全站降级 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,129 @@
+// 洪兄作品集全站 — PostgreSQL 16 schema
+// 契约来源：docs/phase2/openapi.yaml components.schemas（Phase 2 冻结）
+// 纪律来源：ADR-005（UUID 主键 / created_at+updated_at / deleted_at 软删除 / 显式外键）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7 起：连接串不再写在 schema 里，改由 prisma.config.ts 提供；
+// 运行时通过 @prisma/adapter-pg 传入连接（见 lib/db.ts）。
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- 枚举（与 openapi 完全一致） ----------
+
+enum LicenseType {
+  original
+  cc0
+  cc_by
+  commercial
+  client_owned
+  ai_assisted
+}
+
+enum ClientAuthStatus {
+  not_client
+  authorized
+  pending
+}
+
+enum PostStatus {
+  published
+  draft
+}
+
+enum CommentType {
+  message
+  subscribe_note
+}
+
+// ---------- 模型 ----------
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique
+  name          String?
+  passwordHash  String   @map("password_hash")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  @@map("users")
+}
+
+model Project {
+  id                String    @id @default(uuid()) @db.Uuid
+  slug              String    @unique
+  title             String
+  summary           String
+  coverImageUrl     String    @map("cover_image_url")
+  galleryUrls       String[]  @map("gallery_urls")
+  contentMd         String    @map("content_md")
+  category          String?
+  tags              String[]
+  year              Int?
+  role              String?
+  // 版权结构化字段（Phase 1 OPEN-DECISIONS 裁定：纳入首版）
+  materialSource    String?   @map("material_source")
+  licenseType       LicenseType? @map("license_type")
+  attribution       String?
+  clientAuthStatus  ClientAuthStatus? @map("client_auth_status")
+  // 首页精选：控制首页右列预览网格（3–5 件最强作品）
+  featured          Boolean   @default(false)
+  sortOrder         Int       @default(0) @map("sort_order")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  @@map("projects")
+}
+
+model Post {
+  id            String     @id @default(uuid()) @db.Uuid
+  slug          String     @unique
+  title         String
+  excerpt       String?
+  coverImageUrl String?    @map("cover_image_url")
+  contentMd     String     @map("content_md")
+  tags          String[]
+  status        PostStatus @default(draft)
+  publishedAt   DateTime?  @map("published_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  deletedAt     DateTime?  @map("deleted_at")
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String      @id @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  message   String
+  type      CommentType @default(message)
+  readAt    DateTime?   @map("read_at")
+  // PIPL 明示同意留痕（Phase 1 OPEN-DECISIONS 裁定：纳入）
+  consentAt DateTime?   @map("consent_at")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  deletedAt DateTime?   @map("deleted_at")
+
+  @@map("comments")
+}
+
+model Subscription {
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String
+  name           String?
+  source         String?
+  // PIPL 明示同意留痕
+  consentAt      DateTime? @map("consent_at")
+  unsubscribedAt DateTime? @map("unsubscribed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  @@map("subscriptions")
+}

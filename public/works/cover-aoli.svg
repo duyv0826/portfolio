@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="《澳里·光景》占位封面">
+  <rect width="1200" height="900" fill="#F4F4F5"/>
+  <rect x="40" y="40" width="1120" height="820" fill="none" stroke="#E4E4E7" stroke-width="2"/>
+  <g stroke="#E4E4E7" stroke-width="1">
+    <circle cx="600" cy="470" r="120"/>
+    <circle cx="600" cy="470" r="200"/>
+    <circle cx="600" cy="470" r="280"/>
+  </g>
+  <g font-family="'Times New Roman', Georgia, serif" fill="#18181B">
+    <text x="80" y="130" font-size="34" letter-spacing="-0.5">澳里·光景</text>
+    <text x="80" y="176" font-size="20" fill="#71717A" font-family="monospace">AOLI LIGHTSCAPE</text>
+  </g>
+  <g font-family="monospace" fill="#A1A1AA">
+    <text x="80" y="820" font-size="18">占位封面 · 待替换为真实作品图</text>
+    <text x="80" y="850" font-size="16">1200 × 900 · 4:3</text>
+    <text x="1120" y="820" font-size="18" text-anchor="end">©洪兄</text>
+  </g>
+  <path d="M430 470 A170 170 0 0 1 770 470" fill="none" stroke="#2B4ACB" stroke-width="3" opacity="0.45"/>
+</svg>

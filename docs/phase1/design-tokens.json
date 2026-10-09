@@ -1,0 +1,100 @@
+{
+  "$schema": "mvp-dev-team/design-tokens v1",
+  "meta": {
+    "product": "洪兄作品集全站",
+    "designer": "颜好看 (UI/UX)",
+    "date": "2026-10-09",
+    "theme": "Gallery Paper (light, default)",
+    "note": "颜色为 Phase 1 锁定终值（与架构 §10 @theme 对齐）；间距/阴影/字阶/字距/动效为种子值，Phase 2 DESIGN.md 终定。组件层禁止裸 #hex（例外仅 #fff/#000）；全站零渐变；图标仅 lucide-react。"
+  },
+  "color": {
+    "bg":            { "value": "#FCFCFD", "type": "color", "layer": "A1-identity" },
+    "surface":       { "value": "#FFFFFF", "type": "color", "layer": "A1-identity" },
+    "surface-warm":  { "value": "#F4F4F5", "type": "color", "layer": "A1-identity" },
+    "fg":            { "value": "#18181B", "type": "color", "layer": "A1-identity" },
+    "fg-2":          { "value": "#3F3F46", "type": "color", "layer": "A1-identity" },
+    "muted":         { "value": "#71717A", "type": "color", "layer": "A1-identity" },
+    "meta":          { "value": "#A1A1AA", "type": "color", "layer": "A1-identity" },
+    "border":        { "value": "#E4E4E7", "type": "color", "layer": "A1-identity" },
+    "border-soft":   { "value": "#F4F4F5", "type": "color", "layer": "A1-identity" },
+    "accent":        { "value": "#2B4ACB", "type": "color", "layer": "A1-identity", "note": "品牌主色 深钴蓝，非 indigo、非紫粉" },
+    "accent-hover":  { "value": "#213AA6", "type": "color", "layer": "A1-identity" },
+    "accent-active": { "value": "#1A2F85", "type": "color", "layer": "A1-identity" },
+    "accent-on":     { "value": "#FFFFFF", "type": "color", "layer": "A1-identity" },
+    "success":       { "value": "#16A34A", "type": "color", "layer": "A2-semantic" },
+    "warn":          { "value": "#D97706", "type": "color", "layer": "A2-semantic" },
+    "danger":        { "value": "#DC2626", "type": "color", "layer": "A2-semantic" },
+    "stage":         { "value": "#0B0B0C", "type": "color", "layer": "C-extension", "note": "作品详情页暗舞台，局部组件级，非全站暗主题" },
+    "stage-fg":      { "value": "#F4F4F5", "type": "color", "layer": "C-extension" }
+  },
+  "font": {
+    "family": {
+      "display": { "value": "var(--font-bricolage), var(--font-noto), sans-serif", "type": "fontFamily" },
+      "body":    { "value": "var(--font-inter), var(--font-noto), sans-serif", "type": "fontFamily" },
+      "mono":    { "value": "var(--font-jetbrains), var(--font-noto), monospace", "type": "fontFamily" }
+    },
+    "size": {
+      "xs":  { "value": "12px", "type": "dimension" },
+      "sm":  { "value": "14px", "type": "dimension" },
+      "base":{ "value": "16px", "type": "dimension" },
+      "lg":  { "value": "18px", "type": "dimension" },
+      "xl":  { "value": "20px", "type": "dimension" },
+      "2xl": { "value": "24px", "type": "dimension" },
+      "3xl": { "value": "32px", "type": "dimension" },
+      "4xl": { "value": "40px", "type": "dimension" }
+    },
+    "weight": {
+      "regular": { "value": "400", "type": "fontWeight" },
+      "medium":  { "value": "510", "type": "fontWeight" },
+      "semibold":{ "value": "590", "type": "fontWeight" }
+    },
+    "tracking": {
+      "caps":    { "value": "0.06em", "type": "letterSpacing" },
+      "display": { "value": "-0.02em", "type": "letterSpacing" },
+      "body":    { "value": "0", "type": "letterSpacing" }
+    },
+    "leading": {
+      "body":    { "value": "1.7", "type": "lineHeight" },
+      "heading": { "value": "1.2", "type": "lineHeight" }
+    }
+  },
+  "spacing": {
+    "1":  { "value": "4px",  "type": "dimension" },
+    "2":  { "value": "8px",  "type": "dimension" },
+    "3":  { "value": "12px", "type": "dimension" },
+    "4":  { "value": "16px", "type": "dimension" },
+    "5":  { "value": "20px", "type": "dimension" },
+    "6":  { "value": "24px", "type": "dimension" },
+    "8":  { "value": "32px", "type": "dimension" },
+    "10": { "value": "40px", "type": "dimension" },
+    "12": { "value": "48px", "type": "dimension" },
+    "16": { "value": "64px", "type": "dimension" },
+    "section-desktop": { "value": "80px", "type": "dimension" },
+    "section-tablet":  { "value": "48px", "type": "dimension" },
+    "section-phone":   { "value": "32px", "type": "dimension" }
+  },
+  "radius": {
+    "sm":   { "value": "6px",  "type": "dimension" },
+    "md":   { "value": "10px", "type": "dimension" },
+    "lg":   { "value": "14px", "type": "dimension" },
+    "pill": { "value": "9999px", "type": "dimension" }
+  },
+  "shadow": {
+    "xs": { "value": "0 1px 2px rgba(24,24,27,0.04)", "type": "boxShadow", "seed": true },
+    "sm": { "value": "0 1px 3px rgba(24,24,27,0.06), 0 1px 2px rgba(24,24,27,0.04)", "type": "boxShadow", "seed": true },
+    "md": { "value": "0 4px 6px -1px rgba(24,24,27,0.08), 0 2px 4px -1px rgba(24,24,27,0.04)", "type": "boxShadow", "seed": true }
+  },
+  "motion": {
+    "fast":           { "value": "150ms", "type": "duration" },
+    "base":           { "value": "200ms", "type": "duration" },
+    "ease-standard":  { "value": "cubic-bezier(0.2, 0, 0, 1)", "type": "cubicBezier" },
+    "prefers-reduced":{ "value": "reduce", "type": "media" }
+  },
+  "icon": {
+    "library":    { "value": "lucide-react@^1.0", "type": "string" },
+    "sizes":      { "value": ["16px", "20px", "24px"], "type": "array" },
+    "stroke":     { "value": "2px", "type": "dimension" },
+    "theme":      "currentColor",
+    "emojiAllowed": false
+  }
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-label="《抉择的房间》占位封面">
+  <rect width="1200" height="900" fill="#F4F4F5"/>
+  <rect x="40" y="40" width="1120" height="820" fill="none" stroke="#E4E4E7" stroke-width="2"/>
+  <line x1="40" y1="40" x2="1160" y2="860" stroke="#E4E4E7" stroke-width="1"/>
+  <line x1="1160" y1="40" x2="40" y2="860" stroke="#E4E4E7" stroke-width="1"/>
+  <g font-family="'Times New Roman', Georgia, serif" fill="#18181B">
+    <text x="80" y="130" font-size="34" letter-spacing="-0.5">抉择的房间</text>
+    <text x="80" y="176" font-size="20" fill="#71717A" font-family="monospace">THE ROOM OF CHOICE</text>
+  </g>
+  <g font-family="monospace" fill="#A1A1AA">
+    <text x="80" y="820" font-size="18">占位封面 · 待替换为真实作品图</text>
+    <text x="80" y="850" font-size="16">1200 × 900 · 4:3</text>
+    <text x="1120" y="820" font-size="18" text-anchor="end">©洪兄</text>
+  </g>
+  <circle cx="600" cy="450" r="120" fill="none" stroke="#2B4ACB" stroke-width="2" opacity="0.35"/>
+  <path d="M600 330 L600 570 M480 450 L720 450" stroke="#2B4ACB" stroke-width="1" opacity="0.25"/>
+</svg>
