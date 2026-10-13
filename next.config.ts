@@ -14,6 +14,8 @@ const COS_HOST_PATTERN = process.env.NEXT_PUBLIC_COS_HOST ?? "*.cos.*.myqcloud.c
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Docker 部署必需：standalone 输出只打包运行时必需文件（见 deploy/Dockerfile）
+  output: "standalone",
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",

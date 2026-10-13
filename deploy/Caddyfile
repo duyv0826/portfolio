@@ -1,0 +1,7 @@
+# 作品集站点反代 — Caddy 自动 HTTPS
+# 域名未备案前，把下面一行改成 :80 即可临时 HTTP 访问（Caddy 对 IP 访问不签证书）。
+
+portfolio.{$SITE_DOMAIN:?SITE_DOMAIN required} {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
