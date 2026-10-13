@@ -103,15 +103,15 @@ function mapPost(row: NonNullable<PostRow>): PostDetail {
   };
 }
 
-function stripProjectContent(p: ProjectDetail): ProjectListItem {
-  const { content_md: _content, ...rest } = p;
-  return rest;
+/** 去掉正文，只保留列表字段（同 repo-mock.ts：用 delete 避免未使用变量） */
+function stripContent<T extends { content_md: string }>(item: T): Omit<T, "content_md"> {
+  const clone: Partial<T> = { ...item };
+  delete clone.content_md;
+  return clone as Omit<T, "content_md">;
 }
 
-function stripPostContent(p: PostDetail): PostListItem {
-  const { content_md: _content, ...rest } = p;
-  return rest;
-}
+const stripProjectContent = (p: ProjectDetail): ProjectListItem => stripContent(p);
+const stripPostContent = (p: PostDetail): PostListItem => stripContent(p);
 
 function paginate<T>(items: T[], page: number, limit: number, total: number): Paginated<T> {
   return { items, page, limit, total };

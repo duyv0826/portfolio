@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { badRequest, ok, serverError } from "@/lib/api";
+import { badRequest, serverError } from "@/lib/api";
 import { getRepo } from "@/lib/repo-factory";
 import { PAGE_SIZE } from "@/lib/site-config";
 import { z } from "zod";

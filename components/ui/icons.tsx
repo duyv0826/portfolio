@@ -28,7 +28,6 @@ import {
   Search,
   LogOut,
   Lock,
-  type LucideIcon,
 } from "lucide-react";
 
 /**

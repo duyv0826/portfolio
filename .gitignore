@@ -34,3 +34,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# 联调临时产物（cookie jar / 登录请求体）
+tmp_*

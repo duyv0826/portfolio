@@ -6,7 +6,6 @@ import type {
   Paginated,
   PostDetail,
   PostListItem,
-  PostStatus,
   ProjectDetail,
   ProjectListItem,
   SubscribeRequest,
@@ -42,16 +41,18 @@ function paginate<T>(items: T[], page: number, limit: number): Paginated<T> {
   };
 }
 
-/** 去掉正文，只留列表字段 */
-function toProjectListItem(p: ProjectDetail): ProjectListItem {
-  const { content_md: _content, ...rest } = p;
-  return rest;
+/**
+ * 去掉正文，只保留列表字段。
+ * 用 delete 而非 rest 解构 —— 后者会留下一个「已声明但未使用」的变量。
+ */
+function stripContent<T extends { content_md: string }>(item: T): Omit<T, "content_md"> {
+  const clone: Partial<T> = { ...item };
+  delete clone.content_md;
+  return clone as Omit<T, "content_md">;
 }
 
-function toPostListItem(p: PostDetail): PostListItem {
-  const { content_md: _content, ...rest } = p;
-  return rest;
-}
+const toProjectListItem = (p: ProjectDetail): ProjectListItem => stripContent(p);
+const toPostListItem = (p: PostDetail): PostListItem => stripContent(p);
 
 const byUpdatedDesc = (a: { updated_at: string }, b: { updated_at: string }) =>
   b.updated_at.localeCompare(a.updated_at);

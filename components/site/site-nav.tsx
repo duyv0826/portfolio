@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NAV_LINKS, SITE, SOCIAL } from "@/lib/site-config";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/ui/icons";
@@ -15,10 +15,13 @@ export function SiteNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // 路由变化后自动收起抽屉，避免遮罩残留
-  useEffect(() => {
+  // 路由变化时收起抽屉。按 React 官方做法在渲染期派生，而不是放进 effect
+  // （effect 里 setState 会触发级联渲染）。
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (pathname !== prevPath) {
+    setPrevPath(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

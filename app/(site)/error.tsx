@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/primitives";
 import { Icon } from "@/components/ui/icons";
@@ -36,9 +37,9 @@ export default function SiteError({
         {error.digest && <p className="font-mono text-xs text-meta">ref: {error.digest}</p>}
         <div className="flex flex-wrap gap-3 pt-2">
           <Button onClick={reset}>重试</Button>
-          <a href="/" className="btn btn-secondary">
+          <Link href="/" className="btn btn-secondary">
             返回首页
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -9,7 +9,6 @@ import type { Repo } from "./repo";
  * Prisma 实现走动态 import，避免未执行 `prisma generate` 时静态依赖拖垮构建。
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let cached: Repo | null = null;
 
 async function loadRepo(): Promise<Repo> {

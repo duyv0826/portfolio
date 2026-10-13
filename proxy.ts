@@ -14,7 +14,7 @@ import { COOKIE_ACCESS, COOKIE_REFRESH, verifyToken } from "@/lib/auth";
 
 const PUBLIC_ADMIN_PATH = "/admin/login";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (pathname === PUBLIC_ADMIN_PATH) {
@@ -64,3 +64,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
+
+export default proxy;
